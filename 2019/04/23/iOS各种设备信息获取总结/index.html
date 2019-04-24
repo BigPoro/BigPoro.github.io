@@ -88,22 +88,22 @@
 
 
 
-<meta name="description" content="为了统计用户信息、下发广告，服务器端往往需要手机用户设备及app的各种信息，下面讲述一下各种信息的获取方式：  直接上代码:1234567891011121314151617181920212223242526272829303132333435363738// 这个方法后面会列出来NSString *deviceName = [self getDeviceName];NSLog(@&amp;quot;">
+<meta name="description" content="为了统计用户信息、下发广告，服务器端往往需要手机用户设备及app的各种信息，下面讲述一下各种信息的获取方式：">
 <meta name="keywords" content="iOS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="iOS各种设备信息获取总结">
 <meta property="og:url" content="https://bigporo.github.io/2019/04/23/iOS各种设备信息获取总结/index.html">
 <meta property="og:site_name" content="iDog的精神时光屋">
-<meta property="og:description" content="为了统计用户信息、下发广告，服务器端往往需要手机用户设备及app的各种信息，下面讲述一下各种信息的获取方式：  直接上代码:1234567891011121314151617181920212223242526272829303132333435363738// 这个方法后面会列出来NSString *deviceName = [self getDeviceName];NSLog(@&amp;quot;">
+<meta property="og:description" content="为了统计用户信息、下发广告，服务器端往往需要手机用户设备及app的各种信息，下面讲述一下各种信息的获取方式：">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://upload-images.jianshu.io/upload_images/1501122-bcb3df6118144069.png">
 <meta property="og:image" content="https://upload-images.jianshu.io/upload_images/1501122-81fc7ac3cfbba8c5.png">
 <meta property="og:image" content="https://upload-images.jianshu.io/upload_images/1501122-bb83fb377f24cf11.png">
 <meta property="og:image" content="https://upload-images.jianshu.io/upload_images/1501122-f6ab41fd6e235ced.png">
-<meta property="og:updated_time" content="2019-04-24T08:54:18.440Z">
+<meta property="og:updated_time" content="2019-04-24T08:57:59.043Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="iOS各种设备信息获取总结">
-<meta name="twitter:description" content="为了统计用户信息、下发广告，服务器端往往需要手机用户设备及app的各种信息，下面讲述一下各种信息的获取方式：  直接上代码:1234567891011121314151617181920212223242526272829303132333435363738// 这个方法后面会列出来NSString *deviceName = [self getDeviceName];NSLog(@&amp;quot;">
+<meta name="twitter:description" content="为了统计用户信息、下发广告，服务器端往往需要手机用户设备及app的各种信息，下面讲述一下各种信息的获取方式：">
 <meta name="twitter:image" content="https://upload-images.jianshu.io/upload_images/1501122-bcb3df6118144069.png">
 
 
@@ -403,9 +403,8 @@
 
       
         <blockquote>
-<p>为了统计用户信息、下发广告，服务器端往往需要手机用户设备及app的各种信息，下面讲述一下各种信息的获取方式：</p>
+<p>为了统计用户信息、下发广告，服务器端往往需要手机用户设备及app的各种信息，下面讲述一下各种信息的获取方式：<br><a id="more"></a><br>直接上代码:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">// 这个方法后面会列出来</span><br><span class="line">NSString *deviceName = [self getDeviceName];</span><br><span class="line">NSLog(@&quot;设备型号--&gt;%@&quot;, deviceName);</span><br><span class="line"></span><br><span class="line">NSString *iPhoneName = [UIDevice currentDevice].name;</span><br><span class="line">NSLog(@&quot;iPhone名称--&gt;%@&quot;, iPhoneName); </span><br><span class="line"></span><br><span class="line">NSString *appVerion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@&quot;CFBundleShortVersionString&quot;];</span><br><span class="line">NSLog(@&quot;app版本号--&gt;%@&quot;, appVerion);</span><br><span class="line"></span><br><span class="line">CGFloat batteryLevel = [[UIDevice currentDevice] batteryLevel];</span><br><span class="line">NSLog(@&quot;电池电量--&gt;%f&quot;, batteryLevel);</span><br><span class="line"></span><br><span class="line">NSString *localizedModel = [UIDevice currentDevice].localizedModel;</span><br><span class="line">NSLog(@&quot;localizedModel--&gt;%@&quot;, localizedModel);</span><br><span class="line"></span><br><span class="line">NSString *systemName = [UIDevice currentDevice].systemName;</span><br><span class="line">NSLog(@&quot;当前系统名称--&gt;%@&quot;, systemName);</span><br><span class="line"></span><br><span class="line">NSString *systemVersion = [UIDevice currentDevice].systemVersion;</span><br><span class="line">NSLog(@&quot;当前系统版本号--&gt;%@&quot;, systemVersion);</span><br><span class="line"></span><br><span class="line">struct utsname systemInfo;</span><br><span class="line">uname(&amp;systemInfo);</span><br><span class="line">NSString *device_model = [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding];</span><br><span class="line">NSLog(@&quot;device_model--&gt;%@&quot;, device_model);</span><br><span class="line"></span><br><span class="line">// 这个方法后面会单独列出</span><br><span class="line">NSString *macAddress = [self getMacAddress];</span><br><span class="line">NSLog(@&quot;macAddress--&gt;%@&quot;, macAddress);</span><br><span class="line"></span><br><span class="line">// 这个方法后面会单独列出</span><br><span class="line">NSString *deviceIP = [self getDeviceIPAddresses];</span><br><span class="line">NSLog(@&quot;deviceIP--&gt;%@&quot;, deviceIP);</span><br><span class="line"></span><br><span class="line">// 设备上次重启的时间</span><br><span class="line">NSTimeInterval time = [[NSProcessInfo processInfo] systemUptime];</span><br><span class="line">NSDate *lastRestartDate = [[NSDate alloc] initWithTimeIntervalSinceNow:(0 - time)];</span><br></pre></td></tr></table></figure></p>
 </blockquote>
-<p>直接上代码:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">// 这个方法后面会列出来</span><br><span class="line">NSString *deviceName = [self getDeviceName];</span><br><span class="line">NSLog(@&quot;设备型号--&gt;%@&quot;, deviceName);</span><br><span class="line"></span><br><span class="line">NSString *iPhoneName = [UIDevice currentDevice].name;</span><br><span class="line">NSLog(@&quot;iPhone名称--&gt;%@&quot;, iPhoneName); </span><br><span class="line"></span><br><span class="line">NSString *appVerion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@&quot;CFBundleShortVersionString&quot;];</span><br><span class="line">NSLog(@&quot;app版本号--&gt;%@&quot;, appVerion);</span><br><span class="line"></span><br><span class="line">CGFloat batteryLevel = [[UIDevice currentDevice] batteryLevel];</span><br><span class="line">NSLog(@&quot;电池电量--&gt;%f&quot;, batteryLevel);</span><br><span class="line"></span><br><span class="line">NSString *localizedModel = [UIDevice currentDevice].localizedModel;</span><br><span class="line">NSLog(@&quot;localizedModel--&gt;%@&quot;, localizedModel);</span><br><span class="line"></span><br><span class="line">NSString *systemName = [UIDevice currentDevice].systemName;</span><br><span class="line">NSLog(@&quot;当前系统名称--&gt;%@&quot;, systemName);</span><br><span class="line"></span><br><span class="line">NSString *systemVersion = [UIDevice currentDevice].systemVersion;</span><br><span class="line">NSLog(@&quot;当前系统版本号--&gt;%@&quot;, systemVersion);</span><br><span class="line"></span><br><span class="line">struct utsname systemInfo;</span><br><span class="line">uname(&amp;systemInfo);</span><br><span class="line">NSString *device_model = [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding];</span><br><span class="line">NSLog(@&quot;device_model--&gt;%@&quot;, device_model);</span><br><span class="line"></span><br><span class="line">// 这个方法后面会单独列出</span><br><span class="line">NSString *macAddress = [self getMacAddress];</span><br><span class="line">NSLog(@&quot;macAddress--&gt;%@&quot;, macAddress);</span><br><span class="line"></span><br><span class="line">// 这个方法后面会单独列出</span><br><span class="line">NSString *deviceIP = [self getDeviceIPAddresses];</span><br><span class="line">NSLog(@&quot;deviceIP--&gt;%@&quot;, deviceIP);</span><br><span class="line"></span><br><span class="line">// 设备上次重启的时间</span><br><span class="line">NSTimeInterval time = [[NSProcessInfo processInfo] systemUptime];</span><br><span class="line">NSDate *lastRestartDate = [[NSDate alloc] initWithTimeIntervalSinceNow:(0 - time)];</span><br></pre></td></tr></table></figure></p>
 <h3 id="广告位标识符"><a href="#广告位标识符" class="headerlink" title="广告位标识符"></a>广告位标识符</h3><p>在同一个设备上的所有App都会取到相同的值，是苹果专门给各广告提供商用来追踪用户而设的，用户可以在 设置|隐私|广告追踪里重置此id的值，或限制此id的使用，故此id有可能会取不到值，但好在Apple默认是允许追踪的，而且一般用户都不知道有这么个设置，所以基本上用来监测推广效果，是戳戳有余了。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">NSString *idfa = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];</span><br><span class="line">NSLog(@&quot;广告位标识符idfa--&gt;%@&quot;, idfa);</span><br></pre></td></tr></table></figure></p>
 <h3 id="UUID"><a href="#UUID" class="headerlink" title="UUID"></a>UUID</h3><p>是Universally Unique Identifier的缩写，中文意思是通用唯一识别码。它是让分布式系统中的所有元素，都能有唯一的辨识资讯，而不需要透过中央控制端来做辨识资讯的指 定。这样，每个人都可以建立不与其它人冲突的 UUID。在此情况下，就不需考虑数据库建立时的名称重复问题。苹果公司建议使用UUID为应用生成唯一标识字符串。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">NSString *uuid = [[[UIDevice currentDevice] identifierForVendor] UUIDString];</span><br><span class="line">NSLog(@&quot;唯一识别码uuid--&gt;%@&quot;, uuid);</span><br></pre></td></tr></table></figure>
@@ -471,8 +470,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/04/23/RunLoop详解/" rel="next" title="RunLoop详解">
-                <i class="fa fa-chevron-left"></i> RunLoop详解
+              <a href="/2019/04/23/Runtime原理篇/" rel="next" title="Runtime原理篇">
+                <i class="fa fa-chevron-left"></i> Runtime原理篇
               </a>
             
           </div>
@@ -562,7 +561,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-count">17</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -573,7 +572,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-count">3</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -584,7 +583,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-count">3</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

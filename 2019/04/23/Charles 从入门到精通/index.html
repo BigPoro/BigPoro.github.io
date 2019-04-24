@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+<script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+<link href="//cdn.bootcss.com/pace/1.0.2/themes/pink/pace-theme-flash.css" rel="stylesheet">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="iOS,工具集,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="巧神原文  本文是在巧神原文的基础上，按照流程走一遍并记录。  简介Charles 是在 Mac 下常用的网络封包截取工具，在做移动开发时，我们为了调试与服务器端的网络通讯协议，常常需要截取网络封包来分析。 Charles 通过将自己设置成系统的网络访问代理服务器，使得所有的网络访问请求都通过它来完成，从而实现了网络封包的截取和分析。 除了在做移动开发中调试端口外，Charles 也可以用于分析第">
+<meta name="keywords" content="iOS,工具集">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Charles 从入门到精通">
+<meta property="og:url" content="https://bigporo.github.io/2019/04/23/Charles 从入门到精通/index.html">
+<meta property="og:site_name" content="iDog的精神时光屋">
+<meta property="og:description" content="巧神原文  本文是在巧神原文的基础上，按照流程走一遍并记录。  简介Charles 是在 Mac 下常用的网络封包截取工具，在做移动开发时，我们为了调试与服务器端的网络通讯协议，常常需要截取网络封包来分析。 Charles 通过将自己设置成系统的网络访问代理服务器，使得所有的网络访问请求都通过它来完成，从而实现了网络封包的截取和分析。 除了在做移动开发中调试端口外，Charles 也可以用于分析第">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://ws1.sinaimg.cn/large/006tNc79ly1fzgkbvumdoj31100lk115.jpg">
+<meta property="og:image" content="https://ws1.sinaimg.cn/large/006tNc79ly1fzgopc1ircj312m0u0gp0.jpg">
+<meta property="og:image" content="https://ws4.sinaimg.cn/large/006tNc79ly1fzhf6zegaej30x40o2jtx.jpg">
+<meta property="og:image" content="https://ws4.sinaimg.cn/large/006tNc79ly1fzhf7wsgczj312a0u0dnw.jpg">
+<meta property="og:image" content="https://ws4.sinaimg.cn/large/006tNc79ly1fzhf9dp1p1j30x00s8wfa.jpg">
+<meta property="og:image" content="https://ws3.sinaimg.cn/large/006tNc79ly1fzhfbnm01xj30r20gimxf.jpg">
+<meta property="og:image" content="https://ws3.sinaimg.cn/large/006tNc79ly1fzhfdf5vdfj317c0920ta.jpg">
+<meta property="og:image" content="https://ws1.sinaimg.cn/large/006tNc79ly1fzhfz7q8pfj31ay0iy10r.jpg">
+<meta property="og:image" content="https://ws3.sinaimg.cn/large/006tNc79ly1fzhg029882j31ja05yt91.jpg">
+<meta property="og:image" content="https://ws3.sinaimg.cn/large/006tNc79ly1fzhg0rpzuoj30gk120dio.jpg">
+<meta property="og:image" content="https://ws2.sinaimg.cn/large/006tNc79ly1fzhg4nrvo0j317009qmxo.jpg">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/5308475-c6844a5e46784c51.png">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/5308475-61b1c3be4d7b83d2.png">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/5308475-a79e27352086fa0c.png">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/5308475-4ee2987c2d59d79d.png">
+<meta property="og:image" content="https://ws4.sinaimg.cn/large/006tNc79ly1fzhgjzj3n1j30ty0x4wfc.jpg">
+<meta property="og:image" content="https://ws2.sinaimg.cn/large/006tNc79ly1fzhgrnp1utj312h0u0abq.jpg">
+<meta property="og:image" content="https://ws1.sinaimg.cn/large/006tNc79ly1fzhgznnuinj30j20yudk0.jpg">
+<meta property="og:image" content="https://ws1.sinaimg.cn/large/006tNc79ly1fzhh0a8i9oj30u00i8dg5.jpg">
+<meta property="og:image" content="https://ws2.sinaimg.cn/large/006tNc79ly1fzhhwwn9mej30c00pgtdf.jpg">
+<meta property="og:image" content="https://ws4.sinaimg.cn/large/006tNc79ly1fzhhyyctq8j30tg0zkmzr.jpg">
+<meta property="og:image" content="https://ws1.sinaimg.cn/large/006tNc79ly1fzhi8ydtxlj30ta0w0mz8.jpg">
+<meta property="og:updated_time" content="2019-04-24T09:22:10.107Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Charles 从入门到精通">
+<meta name="twitter:description" content="巧神原文  本文是在巧神原文的基础上，按照流程走一遍并记录。  简介Charles 是在 Mac 下常用的网络封包截取工具，在做移动开发时，我们为了调试与服务器端的网络通讯协议，常常需要截取网络封包来分析。 Charles 通过将自己设置成系统的网络访问代理服务器，使得所有的网络访问请求都通过它来完成，从而实现了网络封包的截取和分析。 除了在做移动开发中调试端口外，Charles 也可以用于分析第">
+<meta name="twitter:image" content="https://ws1.sinaimg.cn/large/006tNc79ly1fzgkbvumdoj31100lk115.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://bigporo.github.io/2019/04/23/Charles 从入门到精通/">
+
+
+
+
+
+  <title>Charles 从入门到精通 | iDog的精神时光屋</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a href="https://github.com/BigPoro" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewbox="0 0 250 250" style="fill:#fff; color:#151513; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">iDog的精神时光屋</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://bigporo.github.io/2019/04/23/Charles 从入门到精通/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="iDog">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://ws2.sinaimg.cn/large/006tNc79ly1g2b8vkark5j304z050wel.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="iDog的精神时光屋">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Charles 从入门到精通</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-23T17:17:43+08:00">
+                2019-04-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/工具集/" itemprop="url" rel="index">
+                    <span itemprop="name">工具集</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  3.6k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  12
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><a href="http://blog.devtang.com/2013/12/11/network-tool-charles-intr/" target="_blank" rel="noopener">巧神原文</a></p>
+<blockquote>
+<p>本文是在巧神原文的基础上，按照流程走一遍并记录。</p>
+</blockquote>
+<h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>Charles 是在 Mac 下常用的网络封包截取工具，在做<br>移动开发时，我们为了调试与服务器端的网络通讯协议，常常需要截取网络封包来分析。</p>
+<p>Charles 通过将自己设置成系统的网络访问代理服务器，使得所有的网络访问请求都通过它来完成，从而实现了网络封包的截取和分析。</p>
+<p>除了在做移动开发中调试端口外，Charles 也可以用于分析第三方应用的通讯协议。配合 Charles 的 SSL 功能，Charles 还可以分析 Https 协议。</p>
+<p>Charles 是收费软件，可以免费试用 30 天。试用期过后，未付费的用户仍然可以继续使用，但是每次使用时间不能超过 30 分钟，并且启动时将会有 10 秒种的延时。因此，该付费方案对广大用户还是相当友好的，即使你长期不付费，也能使用完整的软件功能。只是当你需要长时间进行封包调试时，会因为 Charles 强制关闭而遇到影响。</p>
+<p>Charles 主要的功能包括：</p>
+<ol>
+<li>截取 Http 和 Https 网络封包。</li>
+<li>支持重发网络请求，方便后端调试。</li>
+<li>支持修改网络请求参数。</li>
+<li>支持网络请求的截获并动态修改。</li>
+<li>支持模拟慢速网络。</li>
+</ol>
+<a id="more"></a>
+<h3 id="安装-Charles"><a href="#安装-Charles" class="headerlink" title="安装 Charles"></a>安装 Charles</h3><p><a href="https://www.charlesproxy.com/latest-release/download.do" target="_blank" rel="noopener">下载地址</a></p>
+<h3 id="将-Charles-设置成系统代理"><a href="#将-Charles-设置成系统代理" class="headerlink" title="将 Charles 设置成系统代理"></a>将 Charles 设置成系统代理</h3><p>之前提到，Charles 是通过将自己设置成代理服务器来完成封包截取的，所以使用 Charles 的第一步是将其设置成系统的代理服务器。</p>
+<p>启动 Charles 后，第一次 Charles 会请求你给它设置系统代理的权限。你可以输入登录密码授予 Charles 该权限。你也可以忽略该请求，然后在需要将 Charles 设置成系统代理时，选择菜单中的 “Proxy” -&gt; “Mac OS X Proxy” 来将 Charles 设置成系统代理。如下所示：</p>
+<p><img src="https://ws1.sinaimg.cn/large/006tNc79ly1fzgkbvumdoj31100lk115.jpg" alt></p>
+<p>之后，你就可以看到源源不断的网络请求出现在 Charles 的界面中。</p>
+<blockquote>
+<p>注意：开启了VPN之后，会导致抓取不到请求，需要关闭VPN。</p>
+</blockquote>
+<h3 id="Charles-主界面介绍"><a href="#Charles-主界面介绍" class="headerlink" title="Charles 主界面介绍"></a>Charles 主界面介绍</h3><p>Charles 主要提供两种查看封包的视图，分别名为 “Structure” 和 “Sequence”。</p>
+<ul>
+<li>Structure 视图将网络请求按访问的域名分类。</li>
+<li>Sequence 视图将网络请求按访问的时间排序。</li>
+</ul>
+<p><img src="https://ws1.sinaimg.cn/large/006tNc79ly1fzgopc1ircj312m0u0gp0.jpg" alt></p>
+<p>大家可以根据具体的需要在这两种视图之前来回切换。请求多了有些时候会看不过来，Charles 提供了一个简单的 Filter 功能，可以输入关键字来快速筛选出 URL 中带指定关键字的网络请求。</p>
+<p>对于某一个具体的网络请求，你可以查看其详细的请求内容和响应内容。如果请求内容是 POST 的表单，Charles 会自动帮你将表单进行分项显示。如果响应内容是 JSON 格式的，那么 Charles 可以自动帮你将 JSON 内容格式化，方便你查看。如果响应内容是图片，那么 Charles 可以显示出图片的预览。</p>
+<h3 id="过滤网络请求"><a href="#过滤网络请求" class="headerlink" title="过滤网络请求"></a>过滤网络请求</h3><p>通常情况下，我们需要对网络请求进行过滤，只监控向指定目录服务器上发送的请求。对于这种需求，以下几种办法：</p>
+<ul>
+<li><p>方法一：在主界面的中部的 Filter 栏中填入需要过滤出来的关键字。例如我们的服务器的地址是：<a href="https://www.ifeixiu.com" target="_blank" rel="noopener">https://www.ifeixiu.com</a>, 那么只需要在 Filter 栏中填入 ifeixiu 即可。</p>
+</li>
+<li><p>方法二：在 Charles 的菜单栏选择 “Proxy”-&gt;”Recording Settings”，然后选择 Include 栏，选择添加一个项目，然后填入需要监控的协议，主机地址，端口号。这样就可以只截取目标网站的封包了。如下图所示：<br><img src="https://ws4.sinaimg.cn/large/006tNc79ly1fzhf6zegaej30x40o2jtx.jpg" alt><br>通常情况下，我们使用方法一做一些临时性的封包过滤，使用方法二做一些经常性的封包过滤。</p>
+</li>
+<li><p>方法三：在想过滤的网络请求上右击，选择 “Focus”，之后在 Filter 一栏勾选上 Focussed 一项，如下图所示：<br><img src="https://ws4.sinaimg.cn/large/006tNc79ly1fzhf7wsgczj312a0u0dnw.jpg" alt></p>
+</li>
+</ul>
+<h3 id="截取-iPhone-上的网络封包"><a href="#截取-iPhone-上的网络封包" class="headerlink" title="截取 iPhone 上的网络封包"></a>截取 iPhone 上的网络封包</h3><p>Charles 通常用来截取本地上的网络封包，但是当我们需要时，我们也可以用来截取其它设备上的网络请求。下面我就以 iPhone 为例，讲解如何进行相应操作。</p>
+<h4 id="Charles-上的设置"><a href="#Charles-上的设置" class="headerlink" title="Charles 上的设置"></a>Charles 上的设置</h4><p>要截取 iPhone 上的网络请求，我们首先需要将 Charles 的代理功能打开。在 Charles 的菜单栏上选择 “Proxy”-&gt;”Proxy Settings”，填入代理端口 8888，并且勾上 “Enable transparent HTTP proxying” 就完成了在 Charles 上的设置。如下图所示:</p>
+<p><img src="https://ws4.sinaimg.cn/large/006tNc79ly1fzhf9dp1p1j30x00s8wfa.jpg" alt></p>
+<h4 id="iPhone-上的设置"><a href="#iPhone-上的设置" class="headerlink" title="iPhone 上的设置"></a>iPhone 上的设置</h4><p>首先我们需要获取 Charles 运行所在电脑的 IP 地址，Charles 的顶部菜单的 “Help”-&gt;”Local IP Address”，即可在弹出的对话框中看到 IP 地址，如下图所示：</p>
+<p><img src="https://ws3.sinaimg.cn/large/006tNc79ly1fzhfbnm01xj30r20gimxf.jpg" alt></p>
+<p>在 iPhone 的 “ 设置 “-&gt;” 无线局域网 “ 中，可以看到当前连接的 wifi 名，通过点击右边的详情键，可以看到当前连接上的 wifi 的详细信息，包括 IP 地址，子网掩码等信息。在其最底部有「HTTP 代理」一项，我们将其切换成手动，然后填上 Charles 运行所在的电脑的 IP，以及端口号 8888。</p>
+<p>设置好之后，我们打开 iPhone 上的任意需要网络通讯的程序，就可以看到 Charles 弹出 iPhone 请求连接的确认菜单（如下图所示），点击 “Allow” 即可完成设置。</p>
+<p><img src="https://ws3.sinaimg.cn/large/006tNc79ly1fzhfdf5vdfj317c0920ta.jpg" alt></p>
+<h3 id="截取-Https-通讯信息"><a href="#截取-Https-通讯信息" class="headerlink" title="截取 Https 通讯信息"></a>截取 Https 通讯信息</h3><h4 id="安装证书"><a href="#安装证书" class="headerlink" title="安装证书"></a>安装证书</h4><p>如果你需要截取分析 Https 协议相关的内容。那么需要安装 Charles 的 CA 证书。具体步骤如下。</p>
+<p>首先我们需要在 Mac 电脑上安装证书。点击 Charles 的顶部菜单，选择 “Help” -&gt; “SSL Proxying” -&gt; “Install Charles Root Certificate”，然后输入系统的帐号密码，即可在 KeyChain 看到添加好的证书。如下图所示：<br><img src="https://ws1.sinaimg.cn/large/006tNc79ly1fzhfz7q8pfj31ay0iy10r.jpg" alt><br><img src="https://ws3.sinaimg.cn/large/006tNc79ly1fzhg029882j31ja05yt91.jpg" alt><br>需要注意的是，即使是安装完证书之后，Charles 默认也并不截取 Https 网络通讯的信息，如果你想对截取某个网站上的所有 Https 网络请求，可以在该请求上右击，选择 SSL proxy，如下图所示：</p>
+<p><img src="https://ws3.sinaimg.cn/large/006tNc79ly1fzhg0rpzuoj30gk120dio.jpg" alt></p>
+<h4 id="截取移动设备中的-Https-通讯信息"><a href="#截取移动设备中的-Https-通讯信息" class="headerlink" title="截取移动设备中的 Https 通讯信息"></a>截取移动设备中的 Https 通讯信息</h4><p>如果我们需要在 iOS 或 Android 机器上截取 Https 协议的通讯内容，还需要在手机上安装相应的证书。点击 Charles 的顶部菜单，选择 “Help” -&gt; “SSL Proxying” -&gt; “Install Charles Root Certificate on a Mobile Device or Remote Browser”，然后就可以看到 Charles 弹出的简单的安装教程。如下图所示：</p>
+<p><img src="https://ws2.sinaimg.cn/large/006tNc79ly1fzhg4nrvo0j317009qmxo.jpg" alt></p>
+<p>这样，对于该 Host 的所有 SSL 请求可以被截取到了。</p>
+<p>按照我们之前说的教程，在设备上设置好 Charles 为代理后，在手机浏览器中访问地址：<a href="http://charlesproxy.com/getssl，即可打开证书安装的界面，安装完证书后，就可以截取手机上的" target="_blank" rel="noopener">http://charlesproxy.com/getssl，即可打开证书安装的界面，安装完证书后，就可以截取手机上的</a> Https 通讯内容了。不过同样需要注意，默认情况下 Charles 并不做截取，你还需要在要截取的网络请求上右击，选择 SSL proxy 菜单项。</p>
+<h4 id="可能遇到的问题"><a href="#可能遇到的问题" class="headerlink" title="可能遇到的问题"></a>可能遇到的问题</h4><h5 id="Charles乱码"><a href="#Charles乱码" class="headerlink" title="Charles乱码"></a>Charles乱码</h5><blockquote>
+<p>3.10版本之前:</p>
+</blockquote>
+<p>去<a href="http://www.charlesproxy.com/ssl.zip" target="_blank" rel="noopener">http://www.charlesproxy.com/ssl.zip</a> 下载 CA 证书文件，然后双击 .crt 文件，选择‘总是信任’按钮，在钥匙串访问中即可看到添加成功的证书。</p>
+<blockquote>
+<p>4.02版本以后</p>
+</blockquote>
+<ol>
+<li><p>先点proxy中的macOS Proxy ，如果进行了网络请求，但是Charles没有出现数据的话，把翻墙软件关了。</p>
+</li>
+<li><p>然后去钥匙串找到Charles的CA证书，双击修改如下。<br><img src="https://upload-images.jianshu.io/upload_images/5308475-c6844a5e46784c51.png" alt></p>
+</li>
+<li>关闭窗口就可以看到证书变成:<br><img src="https://upload-images.jianshu.io/upload_images/5308475-61b1c3be4d7b83d2.png" alt></li>
+<li>接下来点击proxy中的SSL Proxying Settings，出现如下图所示，然后点add 在Host里填 * 号 ，在Port里填443，然后点ok：<br><img src="https://upload-images.jianshu.io/upload_images/5308475-a79e27352086fa0c.png" alt><br><img src="https://upload-images.jianshu.io/upload_images/5308475-4ee2987c2d59d79d.png" alt><h3 id="模拟慢速网络"><a href="#模拟慢速网络" class="headerlink" title="模拟慢速网络"></a>模拟慢速网络</h3>在做移动开发的时候，我们常常需要模拟慢速网络或者高延迟的网络，以测试在移动网络下，应用的表现是否正常。Charles 对此需求提供了很好的支持。</li>
+</ol>
+<p>在 Charles 的菜单上，选择 “Proxy”-&gt;”Throttle Setting” 项，在之后弹出的对话框中，我们可以勾选上 “Enable Throttling”，并且可以设置 Throttle Preset 的类型。如下图所示：<br><img src="https://ws4.sinaimg.cn/large/006tNc79ly1fzhgjzj3n1j30ty0x4wfc.jpg" alt></p>
+<p>如果我们只想模拟指定网站的慢速网络，可以再勾选上图中的 “Only for selected hosts” 项，然后在对话框的下半部分设置中增加指定的 hosts 项即可。</p>
+<h3 id="修改网络请求内容"><a href="#修改网络请求内容" class="headerlink" title="修改网络请求内容"></a>修改网络请求内容</h3><p>有些时候为了调试服务器的接口，我们需要反复尝试不同参数的网络请求。Charles 可以方便地提供网络请求的修改和重发功能。只需要在以往的网络请求上点击右键，选择 “Edit”，即可创建一个可编辑的网络请求。如下所示：</p>
+<p><img src="https://ws2.sinaimg.cn/large/006tNc79ly1fzhgrnp1utj312h0u0abq.jpg" alt></p>
+<h3 id="给服务器做压力测试"><a href="#给服务器做压力测试" class="headerlink" title="给服务器做压力测试"></a>给服务器做压力测试</h3><p>我们可以使用 Charles 的 Repeat 功能来简单地测试服务器的并发处理能力，方法如下。</p>
+<p>我们在想打压的网络请求上（POST 或 GET 请求均可）右击，然后选择 「Repeat Advanced」菜单项，如下所示：<br><img src="https://ws1.sinaimg.cn/large/006tNc79ly1fzhgznnuinj30j20yudk0.jpg" alt></p>
+<p>接着我们就可以在弹出的对话框中，选择打压的并发线程数以及打压次数，确定之后，即可开始打压。</p>
+<p><img src="https://ws1.sinaimg.cn/large/006tNc79ly1fzhh0a8i9oj30u00i8dg5.jpg" alt></p>
+<blockquote>
+<p>悄悄说一句，一些写得很弱的投票网站，也可以用这个办法来快速投票。当然，我也可以用 Charles 的 Repeat 功能给一些诈骗的钓鱼网站喂了不少垃圾数据。</p>
+</blockquote>
+<h3 id="修改服务器返回内容"><a href="#修改服务器返回内容" class="headerlink" title="修改服务器返回内容"></a>修改服务器返回内容</h3><p>有些时候我们想让服务器返回一些指定的内容，方便我们调试一些特殊情况。例如列表页面为空的情况，数据异常的情况，部分耗时的网络请求超时的情况等。如果没有 Charles，要服务器配合构造相应的数据显得会比较麻烦。这个时候，使用 Charles 相关的功能就可以满足我们的需求。</p>
+<p>根据具体的需求，Charles 提供了 Map 功能、 Rewrite 功能以及 Breakpoints 功能，都可以达到修改服务器返回内容的目的。这三者在功能上的差异是：</p>
+<ul>
+<li>Map 功能适合长期地将某一些请求重定向到另一个网络地址或本地文件。</li>
+<li>Rewrite 功能适合对网络请求进行一些正则替换。</li>
+<li>Breakpoints 功能适合做一些临时性的修改。</li>
+</ul>
+<h4 id="Map-功能"><a href="#Map-功能" class="headerlink" title="Map 功能"></a>Map 功能</h4><p>Charles 的 Map 功能分 Map Remote 和 Map Local 两种。顾名思义，<strong>Map Remote 是将指定的网络请求重定向到另一个网址请求地址，Map Local 是将指定的网络请求重定向到本地文件</strong>。</p>
+<p>在 Charles 的菜单中，选择 “Tools”-&gt;”Map Remote” 或 “Map Local” 即可进入到相应功能的设置页面。也可以选中一个请求，右击选择对应的操作。</p>
+<p><img src="https://ws2.sinaimg.cn/large/006tNc79ly1fzhhwwn9mej30c00pgtdf.jpg" alt></p>
+<ul>
+<li>对于 Map Remote 功能，我们需要分别填写网络重定向的源地址和目的地址，对于不需要限制的条件，可以留空。下图是一个示例，我将所有 dev.ifeixiu.com（测试服务器）的请求重定向到了 ifeixiu.com（线上服务器）。</li>
+</ul>
+<p><img src="https://ws4.sinaimg.cn/large/006tNc79ly1fzhhyyctq8j30tg0zkmzr.jpg" alt></p>
+<ul>
+<li>对于 Map Local 功能，我们需要填写的重定向的源地址和本地的目标文件。对于有一些复杂的网络请求结果，我们可以先使用 Charles 提供的 “Save Response…” 功能，将请求结果保存到本地，然后稍加修改，成为我们的目标映射文件。</li>
+<li>下图是一个示例，我将一个指定的网络请求通过 Map Local 功能映射到了本地的一个经过修改的文件中。</li>
+</ul>
+<p><img src="https://ws1.sinaimg.cn/large/006tNc79ly1fzhi8ydtxlj30ta0w0mz8.jpg" alt></p>
+<p>Map Local 在使用的时候，有一个潜在的问题，就是其返回的 Http Response Header 与正常的请求并不一样。这个时候如果客户端校验了 Http Response Header 中的部分内容，就会使得该功能失效。解决办法是同时使用 Map Local 以下面提到的 Rewrite 功能，将相关的 Http 头 Rewrite 成我们希望的内容。</p>
+<h4 id="Rewrite-功能"><a href="#Rewrite-功能" class="headerlink" title="Rewrite 功能"></a>Rewrite 功能</h4><p>Rewrite 功能功能适合对某一类网络请求进行一些正则替换，以达到修改结果的目的。</p>
+<h4 id="Breakpoints-功能"><a href="#Breakpoints-功能" class="headerlink" title="Breakpoints 功能"></a>Breakpoints 功能</h4><p>上面提供的 Rewrite 功能最适合做批量和长期的替换，但是很多时候，我们只是想临时修改一次网络请求结果，这个时候，使用 Rewrite 功能虽然也可以达到目的，但是过于麻烦，对于临时性的修改，我们最好使用 Breakpoints 功能。</p>
+<p>Breakpoints 功能类似我们在 Xcode 中设置的断点一样，当指定的网络请求发生时，Charles 会截获该请求，这个时候，我们可以在 Charles 中临时修改网络请求的返回内容。</p>
+<blockquote>
+<p>需要注意的是，使用 Breakpoints 功能将网络请求截获并修改过程中，整个网络请求的计时并不会暂停，所以长时间的暂停可能导致客户端的请求超时。</p>
+</blockquote>
+<h3 id="反向代理"><a href="#反向代理" class="headerlink" title="反向代理"></a>反向代理</h3><p>Charles 的反向代理功能允许我们将本地的端口映射到远程的另一个端口上。</p>
+<h3 id="设置外部代理，解决与翻墙软件的冲突"><a href="#设置外部代理，解决与翻墙软件的冲突" class="headerlink" title="设置外部代理，解决与翻墙软件的冲突"></a>设置外部代理，解决与翻墙软件的冲突</h3><p>Charles 的原理是把自己设置成系统的代理服务器，但是在中国，由于工作需要，我们常常需要使用 Google 搜索，所以大部分程序员都有自己的翻墙软件，而这些软件的基本原理，也是把自己设置成系统的代理服务器，来做到透明的翻墙。</p>
+<p>为了使得两者能够和平共处，我们可以在 Charles 的 <strong>External Proxy Settings</strong> 中，设置翻墙的代理端口以及相关信息。同时，我们也要关闭相关翻墙软件的自动设置，使其不主动修改系统代理，避免 Charles 失效。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>通过 Charles 软件，我们可以很方便地在日常开发中，截取和调试网络请求内容，分析封包协议以及模拟慢速网络。用好 Charles 可以极大的方便我们对于带有网络请求的 App 的开发和调试。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    iDog
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://bigporo.github.io/2019/04/23/Charles 从入门到精通/" title="Charles 从入门到精通">https://bigporo.github.io/2019/04/23/Charles 从入门到精通/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+   
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/iOS/" rel="tag"> <i class="fa fa-tag"></i> iOS</a>
+          
+            <a href="/tags/工具集/" rel="tag"> <i class="fa fa-tag"></i> 工具集</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/23/文档生成工具-appledoc/" rel="next" title="文档生成工具-appledoc">
+                <i class="fa fa-chevron-left"></i> 文档生成工具-appledoc
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/04/23/Reveal 4.0 使用指南/" rel="prev" title="Reveal 4.0 使用指南">
+                Reveal 4.0 使用指南 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="https://ws2.sinaimg.cn/large/006tNc79ly1g2b8vkark5j304z050wel.jpg" alt="iDog">
+            
+              <p class="site-author-name" itemprop="name">iDog</p>
+              <p class="site-description motion-element" itemprop="description">一个记录工作和生活的小地方。</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/BigPoro" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.zhihu.com/people/liu-huan-34-85/activities" target="_blank" title="知乎">
+                      
+                        <i class="fa fa-fw fa-globe"></i>知乎</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装-Charles"><span class="nav-number">2.</span> <span class="nav-text">安装 Charles</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#将-Charles-设置成系统代理"><span class="nav-number">3.</span> <span class="nav-text">将 Charles 设置成系统代理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Charles-主界面介绍"><span class="nav-number">4.</span> <span class="nav-text">Charles 主界面介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#过滤网络请求"><span class="nav-number">5.</span> <span class="nav-text">过滤网络请求</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#截取-iPhone-上的网络封包"><span class="nav-number">6.</span> <span class="nav-text">截取 iPhone 上的网络封包</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Charles-上的设置"><span class="nav-number">6.1.</span> <span class="nav-text">Charles 上的设置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#iPhone-上的设置"><span class="nav-number">6.2.</span> <span class="nav-text">iPhone 上的设置</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#截取-Https-通讯信息"><span class="nav-number">7.</span> <span class="nav-text">截取 Https 通讯信息</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#安装证书"><span class="nav-number">7.1.</span> <span class="nav-text">安装证书</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#截取移动设备中的-Https-通讯信息"><span class="nav-number">7.2.</span> <span class="nav-text">截取移动设备中的 Https 通讯信息</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#可能遇到的问题"><span class="nav-number">7.3.</span> <span class="nav-text">可能遇到的问题</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Charles乱码"><span class="nav-number">7.3.1.</span> <span class="nav-text">Charles乱码</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#模拟慢速网络"><span class="nav-number">8.</span> <span class="nav-text">模拟慢速网络</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#修改网络请求内容"><span class="nav-number">9.</span> <span class="nav-text">修改网络请求内容</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#给服务器做压力测试"><span class="nav-number">10.</span> <span class="nav-text">给服务器做压力测试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#修改服务器返回内容"><span class="nav-number">11.</span> <span class="nav-text">修改服务器返回内容</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Map-功能"><span class="nav-number">11.1.</span> <span class="nav-text">Map 功能</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Rewrite-功能"><span class="nav-number">11.2.</span> <span class="nav-text">Rewrite 功能</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Breakpoints-功能"><span class="nav-number">11.3.</span> <span class="nav-text">Breakpoints 功能</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#反向代理"><span class="nav-number">12.</span> <span class="nav-text">反向代理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#设置外部代理，解决与翻墙软件的冲突"><span class="nav-number">13.</span> <span class="nav-text">设置外部代理，解决与翻墙软件的冲突</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">14.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">iDog</span>
+
+  
+</div>
+
+
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+  本站访客数:<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+  <!-- <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div> -->
+
+
+
+  <span class="post-meta-divider"> 欢迎来到精神时光屋~~</span>
+
+
+
+  <!-- <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div> -->
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/hijiki.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>
