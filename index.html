@@ -272,6 +272,476 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://bigporo.github.io/2019/04/23/Runtime应用篇/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="iDog">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://ws2.sinaimg.cn/large/006tNc79ly1g2b8vkark5j304z050wel.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="iDog的精神时光屋">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/04/23/Runtime应用篇/" itemprop="url">Runtime应用篇</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-23T17:17:43+08:00">
+                2019-04-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/iOS/" itemprop="url" rel="index">
+                    <span itemprop="name">iOS</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2.4k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  10
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><img src="https://ws4.sinaimg.cn/large/006tNc79ly1g2dtgtgmzkj30dw050gle.jpg" alt></p>
+<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>Runtime简直就是做大型框架的利器。它的应用场景非常多，下面就介绍一些常见的应用场景。</p>
+<ul>
+<li>关联对象(Objective-C Associated Objects)给分类增加属性</li>
+<li>方法魔法(Method Swizzling)方法添加和替换和KVO实现</li>
+<li>消息转发(热更新)解决Bug(JSPatch)</li>
+<li>实现NSCoding的自动归档和自动解档</li>
+<li>实现字典和模型的自动转换(MJExtension)</li>
+</ul>
+<h3 id="关联对象-Objective-C-Associated-Objects"><a href="#关联对象-Objective-C-Associated-Objects" class="headerlink" title="关联对象(Objective-C Associated Objects)"></a>关联对象(Objective-C Associated Objects)</h3><p>我们都是知道分类是不能自定义属性和变量的。如果在分类的声明中写@property 只能为其生成get 和 set 方法的声明，但无法生成成员变量，就是虽然点语法能调用出来，但程序执行后会crash。</p>
+<p>下面通过关联对象实现给分类添加属性。</p>
+<blockquote>
+<p>关联对象Runtime提供了下面几个接口：</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">//关联对象</span><br><span class="line">void objc_setAssociatedObject(id object, const void *key, id value, objc_AssociationPolicy policy)</span><br><span class="line">//获取关联的对象</span><br><span class="line">id objc_getAssociatedObject(id object, const void *key)</span><br><span class="line">//移除关联的对象</span><br><span class="line">void objc_removeAssociatedObjects(id object)</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>参数解释</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">id object：被关联的对象</span><br><span class="line">const void *key：关联的key，要求唯一</span><br><span class="line">id value：关联的对象</span><br><span class="line">objc_AssociationPolicy policy：内存管理的策略</span><br></pre></td></tr></table></figure>
+<p>通过关联对象实现的属性的内存管理也是有ARC管理的，所以我们只需要给定适当的内存策略就行了，不需要操心对象的释放。</p>
+<blockquote>
+<p>内存管理策略</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>内存策略</th>
+<th>属性修饰</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OBJC_ASSOCIATION_ASSIGN</td>
+<td>@property (assign) 或 @property (unsafe_unretained)</td>
+<td>指定一个关联对象的弱引用。</td>
+</tr>
+<tr>
+<td>OBJC_ASSOCIATION_RETAIN_NONATOMIC</td>
+<td>@property (nonatomic, strong)</td>
+<td>指定一个关联对象的强引用，不能被原子化使用。</td>
+</tr>
+<tr>
+<td>OBJC_ASSOCIATION_COPY_NONATOMIC</td>
+<td>@property (nonatomic, copy)</td>
+<td>指定一个关联对象的copy引用，不能被原子化使用</td>
+</tr>
+<tr>
+<td>OBJC_ASSOCIATION_RETAIN</td>
+<td>@property (atomic, strong)</td>
+<td>指定一个关联对象的强引用，能被原子化使用。</td>
+</tr>
+<tr>
+<td>OBJC_ASSOCIATION_COPY</td>
+<td>@property (atomic, copy)</td>
+<td>指定一个关联对象的copy引用，能被原子化使用。</td>
+</tr>
+</tbody>
+</table>
+<p>下面实现一个UIView的Category添加自定义属性defaultColor。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;ViewController.h&quot;</span><br><span class="line">#import &quot;objc/runtime.h&quot;</span><br><span class="line"></span><br><span class="line">@interface UIView (DefaultColor)</span><br><span class="line"></span><br><span class="line">@property (nonatomic, strong) UIColor *defaultColor;</span><br><span class="line"></span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">@implementation UIView (DefaultColor)</span><br><span class="line"></span><br><span class="line">@dynamic defaultColor;</span><br><span class="line"></span><br><span class="line">static char kDefaultColorKey;</span><br><span class="line"></span><br><span class="line">- (void)setDefaultColor:(UIColor *)defaultColor &#123;</span><br><span class="line">objc_setAssociatedObject(self, &amp;kDefaultColorKey, defaultColor, OBJC_ASSOCIATION_RETAIN_NONATOMIC);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (id)defaultColor &#123;</span><br><span class="line">return objc_getAssociatedObject(self, &amp;kDefaultColorKey);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">@interface ViewController ()</span><br><span class="line"></span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">@implementation ViewController</span><br><span class="line"></span><br><span class="line">- (void)viewDidLoad &#123;</span><br><span class="line">[super viewDidLoad];</span><br><span class="line">// Do any additional setup after loading the view, typically from a nib.</span><br><span class="line"></span><br><span class="line">UIView *test = [UIView new];</span><br><span class="line">test.defaultColor = [UIColor blackColor];</span><br><span class="line">NSLog(@&quot;%@&quot;, test.defaultColor);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<h3 id="方法魔法-Method-Swizzling"><a href="#方法魔法-Method-Swizzling" class="headerlink" title="方法魔法(Method Swizzling)"></a>方法魔法(Method Swizzling)</h3><h4 id="方法添加"><a href="#方法添加" class="headerlink" title="方法添加"></a>方法添加</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">//class_addMethod(Class  _Nullable __unsafe_unretained cls, SEL  _Nonnull name, IMP  _Nonnull imp, const char * _Nullable types)</span><br><span class="line">class_addMethod([self class], sel, (IMP)fooMethod, &quot;v@:&quot;);</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>参数解释</p>
+<ul>
+<li>cls 被添加方法的类</li>
+<li>name 添加的方法的名称的SEL</li>
+<li>imp 方法的实现。该函数必须至少要有两个参数，self,_cmd</li>
+<li>类型编码</li>
+</ul>
+</blockquote>
+<h4 id="方法替换"><a href="#方法替换" class="headerlink" title="方法替换"></a>方法替换</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// 获得某个类的类方法</span><br><span class="line">Method class_getClassMethod(Class cls , SEL name)</span><br><span class="line"></span><br><span class="line">// 获得某个类的实例对象方法</span><br><span class="line">Method class_getInstanceMethod(Class cls , SEL name)</span><br><span class="line"></span><br><span class="line">// 交换两个方法的实现</span><br><span class="line">void method_exchangeImplementations(Method m1 , Method m2)</span><br></pre></td></tr></table></figure>
+<p>示例如下:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">@implementation ViewController</span><br><span class="line"></span><br><span class="line">+ (void)load &#123;</span><br><span class="line">static dispatch_once_t onceToken;</span><br><span class="line">dispatch_once(&amp;onceToken, ^&#123;</span><br><span class="line">Class class = [self class];</span><br><span class="line">SEL originalSelector = @selector(viewDidLoad);</span><br><span class="line">SEL swizzledSelector = @selector(jkviewDidLoad);</span><br><span class="line"></span><br><span class="line">Method originalMethod = class_getInstanceMethod(class,originalSelector);</span><br><span class="line">Method swizzledMethod = class_getInstanceMethod(class,swizzledSelector);</span><br><span class="line"></span><br><span class="line">//judge the method named  swizzledMethod is already existed.</span><br><span class="line">BOOL didAddMethod = class_addMethod(class, originalSelector, method_getImplementation(swizzledMethod), method_getTypeEncoding(swizzledMethod));</span><br><span class="line">// if swizzledMethod is already existed.</span><br><span class="line">if (didAddMethod) &#123;</span><br><span class="line">class_replaceMethod(class, swizzledSelector, method_getImplementation(originalMethod), method_getTypeEncoding(originalMethod));</span><br><span class="line">&#125;</span><br><span class="line">else &#123;</span><br><span class="line">method_exchangeImplementations(originalMethod, swizzledMethod);</span><br><span class="line">&#125;</span><br><span class="line">&#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)jkviewDidLoad &#123;</span><br><span class="line">NSLog(@&quot;替换的方法&quot;);</span><br><span class="line"></span><br><span class="line">[self jkviewDidLoad];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)viewDidLoad &#123;</span><br><span class="line">NSLog(@&quot;自带的方法&quot;);</span><br><span class="line"></span><br><span class="line">[super viewDidLoad];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p> 在 Objective-C 的运行时中，每个类有两个方法都会自动调用。<strong>+load 是在一个类被初始装载时调用，+initialize 是在应用第一次调用该类的类方法或实例方法前调用的</strong>。两个方法都是可选的，并且只有在方法被实现的情况下才会被调用。</p>
+</blockquote>
+<p>实现图解如下图。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/301129-dbc739cb752e60c3.png" alt></p>
+<p>从图中可以看出，我们通过swizzling特性，将selectorC的方法实现IMPc与selectorN的方法实现IMPn交换了，当我们调用selectorC，也就是给对象发送selectorC消息时，所查找到的对应的方法实现就是IMPn而不是IMPc了。</p>
+<h4 id="KVO实现"><a href="#KVO实现" class="headerlink" title="KVO实现"></a>KVO实现</h4><p><a href="https://www.jianshu.com/p/e59bb8f59302" target="_blank" rel="noopener">质量博客解读</a></p>
+<p>全称是Key-value observing，翻译成键值观察。提供了一种当其它对象属性被修改的时候能通知当前对象的机制。在MVC大行其道的Cocoa中，KVO机制很适合实现model和controller类之间的通讯。</p>
+<p>KVO的实现依赖于 Objective-C 强大的 Runtime，当观察某对象 A 时，KVO 机制动态创建一个对象A当前类的子类，并为这个新的子类重写了被观察属性 keyPath 的 setter 方法。setter 方法随后负责通知观察对象属性的改变状况。</p>
+<p><strong>Apple 使用了 isa-swizzling 来实现 KVO 。当观察对象A时，KVO机制动态创建一个新的名为：NSKVONotifying_A的新类，该类继承自对象A的本类，且 KVO 为 NSKVONotifying_A 重写观察属性的 setter 方法，setter 方法会负责在调用原 setter 方法之前和之后，通知所有观察对象属性值的更改情况</strong>。</p>
+<p>所以当我们从应用层面上看来，完全没有意识到有新的类出现，这是系统“隐瞒”了对 KVO 的底层实现过程，让我们误以为还是原来的类。但是此时如果我们创建一个新的名为“NSKVONotifying_A”的类，就会发现系统运行到注册 KVO 的那段代码时程序就崩溃，因为系统在注册监听的时候动态创建了名为 NSKVONotifying_A 的中间类，并指向这个中间类了。</p>
+<blockquote>
+<p>子类setter方法剖析</p>
+</blockquote>
+<p>KVO 的键值观察通知依赖于 NSObject 的两个方法:willChangeValueForKey:和 didChangeValueForKey: ，在存取数值的前后分别调用 2 个方法：<br>被观察属性发生改变之前，willChangeValueForKey:被调用，通知系统该 keyPath 的属性值即将变更；<br>当改变发生后， didChangeValueForKey: 被调用，通知系统该keyPath 的属性值已经变更；之后， observeValueForKey:ofObject:change:context:也会被调用。且重写观察属性的setter 方法这种继承方式的注入是在运行时而不是编译时实现的。<br>KVO 为子类的观察者属性重写调用存取方法的工作原理在代码中相当于：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- (void)setName:(NSString *)newName &#123; </span><br><span class="line">[self willChangeValueForKey:@&quot;name&quot;];    //KVO 在调用存取方法之前总调用 </span><br><span class="line">[super setValue:newName forKey:@&quot;name&quot;]; //调用父类的存取方法 </span><br><span class="line">[self didChangeValueForKey:@&quot;name&quot;];     //KVO 在调用存取方法之后总调用</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>示例如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">- (void)dealloc</span><br><span class="line">&#123;</span><br><span class="line">[self.person removeObserver:self forKeyPath:@&quot;name&quot;];</span><br><span class="line">&#125;</span><br><span class="line">- (void)viewDidLoad &#123;</span><br><span class="line">[super viewDidLoad];</span><br><span class="line">self.person = [Person new];</span><br><span class="line">[self.person addObserver:self forKeyPath:@&quot;name&quot; options:NSKeyValueObservingOptionNew context:@&quot;传个值？&quot;];</span><br><span class="line">&#125;</span><br><span class="line">#pragma mark KVO</span><br><span class="line">- (void)KVO</span><br><span class="line">&#123;</span><br><span class="line">self.person.name = @&quot;new name&quot;;</span><br><span class="line">&#125;</span><br><span class="line">- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary&lt;NSKeyValueChangeKey,id&gt; *)change context:(void *)context</span><br><span class="line">&#123;</span><br><span class="line">NSLog(@&quot;%@对象的%@属性改变了：%@,传值:%@&quot;, object, keyPath, change,context);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>输出如下</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;Person: 0x600000907280&gt;对象的name属性改变了：&#123;</span><br><span class="line">kind = 1;</span><br><span class="line">new = &quot;new name&quot;;</span><br><span class="line">&#125;,传值:传个值？</span><br></pre></td></tr></table></figure>
+<h4 id="消息转发-热更新-解决Bug-JSPatch"><a href="#消息转发-热更新-解决Bug-JSPatch" class="headerlink" title="消息转发(热更新)解决Bug(JSPatch)"></a>消息转发(热更新)解决Bug(JSPatch)</h4><blockquote>
+<p><a href="https://github.com/bang590/JSPatch/wiki/JSPatch-%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86%E8%AF%A6%E8%A7%A3" target="_blank" rel="noopener">JSPatch</a> 是一个 iOS 动态更新框架，只需在项目中引入极小的引擎，就可以使用 JavaScript 调用任何 Objective-C 原生接口，获得脚本语言的优势：为项目动态添加模块，或替换项目原生代码动态修复 bug。</p>
+</blockquote>
+<p>消息转发分为三级，我们可以在每级实现替换功能，实现消息转发，从而不会造成崩溃。JSPatch不仅能够实现消息转发，还可以实现方法添加、替换能一系列功能。</p>
+<h4 id="获得一个类的所有成员变量"><a href="#获得一个类的所有成员变量" class="headerlink" title="获得一个类的所有成员变量"></a>获得一个类的所有成员变量</h4><p>用runtime提供的函数遍历Model自身所有属性。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">unsigned int outCount = 0;</span><br><span class="line">Ivar *ivars = class_copyIvarList([Person class], &amp;outCount);</span><br><span class="line"></span><br><span class="line">// 遍历所有成员变量</span><br><span class="line">for (int i = 0; i &lt; outCount; i++) &#123;</span><br><span class="line">// 取出i位置对应的成员变量</span><br><span class="line">Ivar ivar = ivars[i];</span><br><span class="line">const char *name = ivar_getName(ivar);</span><br><span class="line">const char *type = ivar_getTypeEncoding(ivar);</span><br><span class="line">NSLog(@&quot;成员变量名：%s 成员变量类型：%s&quot;,name,type);</span><br><span class="line">&#125;</span><br><span class="line">// 注意释放内存！</span><br><span class="line">free(ivars);</span><br></pre></td></tr></table></figure>
+<h5 id="实现NSCoding的自动归档和自动解档"><a href="#实现NSCoding的自动归档和自动解档" class="headerlink" title="实现NSCoding的自动归档和自动解档"></a>实现NSCoding的自动归档和自动解档</h5><p>原理描述：用runtime提供的函数遍历Model自身所有属性，并对属性进行encode和decode操作。</p>
+<p>核心方法：在Model的基类中重写方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">- (id)initWithCoder:(NSCoder *)aDecoder &#123;</span><br><span class="line">if (self = [super init]) &#123;</span><br><span class="line">unsigned int outCount;</span><br><span class="line">Ivar * ivars = class_copyIvarList([self class], &amp;outCount);</span><br><span class="line">for (int i = 0; i &lt; outCount; i ++) &#123;</span><br><span class="line">Ivar ivar = ivars[i];</span><br><span class="line">NSString * key = [NSString stringWithUTF8String:ivar_getName(ivar)];</span><br><span class="line">[self setValue:[aDecoder decodeObjectForKey:key] forKey:key];</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line">return self;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)encodeWithCoder:(NSCoder *)aCoder &#123;</span><br><span class="line">unsigned int outCount;</span><br><span class="line">Ivar * ivars = class_copyIvarList([self class], &amp;outCount);</span><br><span class="line">for (int i = 0; i &lt; outCount; i ++) &#123;</span><br><span class="line">Ivar ivar = ivars[i];</span><br><span class="line">NSString * key = [NSString stringWithUTF8String:ivar_getName(ivar)];</span><br><span class="line">[aCoder encodeObject:[self valueForKey:key] forKey:key];</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="实现字典和模型的自动转换-MJExtension"><a href="#实现字典和模型的自动转换-MJExtension" class="headerlink" title="实现字典和模型的自动转换(MJExtension)"></a>实现字典和模型的自动转换(MJExtension)</h5><p>原理描述：用runtime提供的函数遍历Model自身所有属性，如果属性在json中有对应的值，则将其赋值。<br>核心方法：在NSObject的分类中添加方法<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">- (instancetype)initWithDict:(NSDictionary *)dict &#123;</span><br><span class="line"></span><br><span class="line">if (self = [self init]) &#123;</span><br><span class="line">//(1)获取类的属性及属性对应的类型</span><br><span class="line">NSMutableArray * keys = [NSMutableArray array];</span><br><span class="line">NSMutableArray * attributes = [NSMutableArray array];</span><br><span class="line">/*</span><br><span class="line">* 例子</span><br><span class="line">* name = value3 attribute = T@&quot;NSString&quot;,C,N,V_value3</span><br><span class="line">* name = value4 attribute = T^i,N,V_value4</span><br><span class="line">*/</span><br><span class="line">unsigned int outCount;</span><br><span class="line">objc_property_t * properties = class_copyPropertyList([self class], &amp;outCount);</span><br><span class="line">for (int i = 0; i &lt; outCount; i ++) &#123;</span><br><span class="line">objc_property_t property = properties[i];</span><br><span class="line">//通过property_getName函数获得属性的名字</span><br><span class="line">NSString * propertyName = [NSString stringWithCString:property_getName(property) encoding:NSUTF8StringEncoding];</span><br><span class="line">[keys addObject:propertyName];</span><br><span class="line">//通过property_getAttributes函数可以获得属性的名字和@encode编码</span><br><span class="line">NSString * propertyAttribute = [NSString stringWithCString:property_getAttributes(property) encoding:NSUTF8StringEncoding];</span><br><span class="line">[attributes addObject:propertyAttribute];</span><br><span class="line">&#125;</span><br><span class="line">//立即释放properties指向的内存</span><br><span class="line">free(properties);</span><br><span class="line"></span><br><span class="line">//(2)根据类型给属性赋值</span><br><span class="line">for (NSString * key in keys) &#123;</span><br><span class="line">if ([dict valueForKey:key] == nil) continue;</span><br><span class="line">[self setValue:[dict valueForKey:key] forKey:key];</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line">return self;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+   
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://bigporo.github.io/2019/04/23/iOS各种设备信息获取总结/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="iDog">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://ws2.sinaimg.cn/large/006tNc79ly1g2b8vkark5j304z050wel.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="iDog的精神时光屋">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/04/23/iOS各种设备信息获取总结/" itemprop="url">iOS各种设备信息获取总结</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-23T17:17:43+08:00">
+                2019-04-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/iOS/" itemprop="url" rel="index">
+                    <span itemprop="name">iOS</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  3.1k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  17
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <blockquote>
+<p>为了统计用户信息、下发广告，服务器端往往需要手机用户设备及app的各种信息，下面讲述一下各种信息的获取方式：</p>
+</blockquote>
+<p>直接上代码:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">// 这个方法后面会列出来</span><br><span class="line">NSString *deviceName = [self getDeviceName];</span><br><span class="line">NSLog(@&quot;设备型号--&gt;%@&quot;, deviceName);</span><br><span class="line"></span><br><span class="line">NSString *iPhoneName = [UIDevice currentDevice].name;</span><br><span class="line">NSLog(@&quot;iPhone名称--&gt;%@&quot;, iPhoneName); </span><br><span class="line"></span><br><span class="line">NSString *appVerion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@&quot;CFBundleShortVersionString&quot;];</span><br><span class="line">NSLog(@&quot;app版本号--&gt;%@&quot;, appVerion);</span><br><span class="line"></span><br><span class="line">CGFloat batteryLevel = [[UIDevice currentDevice] batteryLevel];</span><br><span class="line">NSLog(@&quot;电池电量--&gt;%f&quot;, batteryLevel);</span><br><span class="line"></span><br><span class="line">NSString *localizedModel = [UIDevice currentDevice].localizedModel;</span><br><span class="line">NSLog(@&quot;localizedModel--&gt;%@&quot;, localizedModel);</span><br><span class="line"></span><br><span class="line">NSString *systemName = [UIDevice currentDevice].systemName;</span><br><span class="line">NSLog(@&quot;当前系统名称--&gt;%@&quot;, systemName);</span><br><span class="line"></span><br><span class="line">NSString *systemVersion = [UIDevice currentDevice].systemVersion;</span><br><span class="line">NSLog(@&quot;当前系统版本号--&gt;%@&quot;, systemVersion);</span><br><span class="line"></span><br><span class="line">struct utsname systemInfo;</span><br><span class="line">uname(&amp;systemInfo);</span><br><span class="line">NSString *device_model = [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding];</span><br><span class="line">NSLog(@&quot;device_model--&gt;%@&quot;, device_model);</span><br><span class="line"></span><br><span class="line">// 这个方法后面会单独列出</span><br><span class="line">NSString *macAddress = [self getMacAddress];</span><br><span class="line">NSLog(@&quot;macAddress--&gt;%@&quot;, macAddress);</span><br><span class="line"></span><br><span class="line">// 这个方法后面会单独列出</span><br><span class="line">NSString *deviceIP = [self getDeviceIPAddresses];</span><br><span class="line">NSLog(@&quot;deviceIP--&gt;%@&quot;, deviceIP);</span><br><span class="line"></span><br><span class="line">// 设备上次重启的时间</span><br><span class="line">NSTimeInterval time = [[NSProcessInfo processInfo] systemUptime];</span><br><span class="line">NSDate *lastRestartDate = [[NSDate alloc] initWithTimeIntervalSinceNow:(0 - time)];</span><br></pre></td></tr></table></figure></p>
+<h3 id="广告位标识符"><a href="#广告位标识符" class="headerlink" title="广告位标识符"></a>广告位标识符</h3><p>在同一个设备上的所有App都会取到相同的值，是苹果专门给各广告提供商用来追踪用户而设的，用户可以在 设置|隐私|广告追踪里重置此id的值，或限制此id的使用，故此id有可能会取不到值，但好在Apple默认是允许追踪的，而且一般用户都不知道有这么个设置，所以基本上用来监测推广效果，是戳戳有余了。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">NSString *idfa = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];</span><br><span class="line">NSLog(@&quot;广告位标识符idfa--&gt;%@&quot;, idfa);</span><br></pre></td></tr></table></figure></p>
+<h3 id="UUID"><a href="#UUID" class="headerlink" title="UUID"></a>UUID</h3><p>是Universally Unique Identifier的缩写，中文意思是通用唯一识别码。它是让分布式系统中的所有元素，都能有唯一的辨识资讯，而不需要透过中央控制端来做辨识资讯的指 定。这样，每个人都可以建立不与其它人冲突的 UUID。在此情况下，就不需考虑数据库建立时的名称重复问题。苹果公司建议使用UUID为应用生成唯一标识字符串。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">NSString *uuid = [[[UIDevice currentDevice] identifierForVendor] UUIDString];</span><br><span class="line">NSLog(@&quot;唯一识别码uuid--&gt;%@&quot;, uuid);</span><br></pre></td></tr></table></figure>
+<h3 id="获取设备型号"><a href="#获取设备型号" class="headerlink" title="获取设备型号"></a>获取设备型号</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br></pre></td><td class="code"><pre><span class="line">// 需要#import &quot;sys/utsname.h&quot;</span><br><span class="line">#warning 题主呕心沥血总结！！最全面！亲测！全网独此一份！！</span><br><span class="line">struct utsname systemInfo;</span><br><span class="line">uname(&amp;systemInfo);</span><br><span class="line">NSString *deviceString = [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding];</span><br><span class="line"></span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPhone3,1&quot;])    return @&quot;iPhone 4&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPhone3,2&quot;])    return @&quot;iPhone 4&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPhone3,3&quot;])    return @&quot;iPhone 4&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPhone4,1&quot;])    return @&quot;iPhone 4S&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPhone5,1&quot;])    return @&quot;iPhone 5&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPhone5,2&quot;])    return @&quot;iPhone 5 (GSM+CDMA)&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPhone5,3&quot;])    return @&quot;iPhone 5c (GSM)&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPhone5,4&quot;])    return @&quot;iPhone 5c (GSM+CDMA)&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPhone6,1&quot;])    return @&quot;iPhone 5s (GSM)&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPhone6,2&quot;])    return @&quot;iPhone 5s (GSM+CDMA)&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPhone7,1&quot;])    return @&quot;iPhone 6 Plus&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPhone7,2&quot;])    return @&quot;iPhone 6&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPhone8,1&quot;])    return @&quot;iPhone 6s&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPhone8,2&quot;])    return @&quot;iPhone 6s Plus&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPhone8,4&quot;])    return @&quot;iPhone SE&quot;;</span><br><span class="line">// 日行两款手机型号均为日本独占，可能使用索尼FeliCa支付方案而不是苹果支付</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPhone9,1&quot;])    return @&quot;国行、日版、港行iPhone 7&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPhone9,2&quot;])    return @&quot;港行、国行iPhone 7 Plus&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPhone9,3&quot;])    return @&quot;美版、台版iPhone 7&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPhone9,4&quot;])    return @&quot;美版、台版iPhone 7 Plus&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPhone10,1&quot;])   return @&quot;国行(A1863)、日行(A1906)iPhone 8&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPhone10,4&quot;])   return @&quot;美版(Global/A1905)iPhone 8&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPhone10,2&quot;])   return @&quot;国行(A1864)、日行(A1898)iPhone 8 Plus&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPhone10,5&quot;])   return @&quot;美版(Global/A1897)iPhone 8 Plus&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPhone10,3&quot;])   return @&quot;国行(A1865)、日行(A1902)iPhone X&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPhone10,6&quot;])   return @&quot;美版(Global/A1901)iPhone X&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPhone11,2&quot;])   return @&quot;iPhone XS&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPhone11,4&quot;])   return @&quot;iPhone XS Max&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPhone11,6&quot;])   return @&quot;iPhone XS Max&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPhone11,8&quot;])   return @&quot;iPhone XR&quot;;</span><br><span class="line"></span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPod1,1&quot;])      return @&quot;iPod Touch 1G&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPod2,1&quot;])      return @&quot;iPod Touch 2G&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPod3,1&quot;])      return @&quot;iPod Touch 3G&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPod4,1&quot;])      return @&quot;iPod Touch 4G&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPod5,1&quot;])      return @&quot;iPod Touch (5 Gen)&quot;;</span><br><span class="line"></span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPad1,1&quot;])      return @&quot;iPad&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPad1,2&quot;])      return @&quot;iPad 3G&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPad2,1&quot;])      return @&quot;iPad 2 (WiFi)&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPad2,2&quot;])      return @&quot;iPad 2&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPad2,3&quot;])      return @&quot;iPad 2 (CDMA)&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPad2,4&quot;])      return @&quot;iPad 2&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPad2,5&quot;])      return @&quot;iPad Mini (WiFi)&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPad2,6&quot;])      return @&quot;iPad Mini&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPad2,7&quot;])      return @&quot;iPad Mini (GSM+CDMA)&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPad3,1&quot;])      return @&quot;iPad 3 (WiFi)&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPad3,2&quot;])      return @&quot;iPad 3 (GSM+CDMA)&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPad3,3&quot;])      return @&quot;iPad 3&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPad3,4&quot;])      return @&quot;iPad 4 (WiFi)&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPad3,5&quot;])      return @&quot;iPad 4&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPad3,6&quot;])      return @&quot;iPad 4 (GSM+CDMA)&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPad4,1&quot;])      return @&quot;iPad Air (WiFi)&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPad4,2&quot;])      return @&quot;iPad Air (Cellular)&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPad4,4&quot;])      return @&quot;iPad Mini 2 (WiFi)&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPad4,5&quot;])      return @&quot;iPad Mini 2 (Cellular)&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPad4,6&quot;])      return @&quot;iPad Mini 2&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPad4,7&quot;])      return @&quot;iPad Mini 3&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPad4,8&quot;])      return @&quot;iPad Mini 3&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPad4,9&quot;])      return @&quot;iPad Mini 3&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPad5,1&quot;])      return @&quot;iPad Mini 4 (WiFi)&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPad5,2&quot;])      return @&quot;iPad Mini 4 (LTE)&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPad5,3&quot;])      return @&quot;iPad Air 2&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPad5,4&quot;])      return @&quot;iPad Air 2&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPad6,3&quot;])      return @&quot;iPad Pro 9.7&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPad6,4&quot;])      return @&quot;iPad Pro 9.7&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPad6,7&quot;])      return @&quot;iPad Pro 12.9&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPad6,8&quot;])      return @&quot;iPad Pro 12.9&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPad6,11&quot;])    return @&quot;iPad 5 (WiFi)&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPad6,12&quot;])    return @&quot;iPad 5 (Cellular)&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPad7,1&quot;])     return @&quot;iPad Pro 12.9 inch 2nd gen (WiFi)&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPad7,2&quot;])     return @&quot;iPad Pro 12.9 inch 2nd gen (Cellular)&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPad7,3&quot;])     return @&quot;iPad Pro 10.5 inch (WiFi)&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPad7,4&quot;])     return @&quot;iPad Pro 10.5 inch (Cellular)&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPad7,5&quot;])     return @&quot;iPad 6th generation&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPad7,6&quot;])     return @&quot;iPad 6th generation&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPad8,1&quot;])     return @&quot;iPad Pro (11-inch)&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPad8,2&quot;])     return @&quot;iPad Pro (11-inch)&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPad8,3&quot;])     return @&quot;iPad Pro (11-inch)&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPad8,4&quot;])     return @&quot;iPad Pro (11-inch)&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPad8,5&quot;])     return @&quot;iPad Pro (12.9-inch) (3rd generation)&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPad8,6&quot;])     return @&quot;iPad Pro (12.9-inch) (3rd generation)&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPad8,7&quot;])     return @&quot;iPad Pro (12.9-inch) (3rd generation)&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;iPad8,8&quot;])     return @&quot;iPad Pro (12.9-inch) (3rd generation)&quot;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if ([deviceString isEqualToString:@&quot;AppleTV2,1&quot;])    return @&quot;Apple TV 2&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;AppleTV3,1&quot;])    return @&quot;Apple TV 3&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;AppleTV3,2&quot;])    return @&quot;Apple TV 3&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;AppleTV5,3&quot;])    return @&quot;Apple TV 4&quot;;</span><br><span class="line"></span><br><span class="line">if ([deviceString isEqualToString:@&quot;i386&quot;])         return @&quot;Simulator&quot;;</span><br><span class="line">if ([deviceString isEqualToString:@&quot;x86_64&quot;])       return @&quot;Simulator&quot;;</span><br><span class="line"></span><br><span class="line">return deviceString;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="获取-iPhone-设备颜色-外壳颜色"><a href="#获取-iPhone-设备颜色-外壳颜色" class="headerlink" title="获取 iPhone 设备颜色/外壳颜色"></a>获取 iPhone 设备颜色/外壳颜色</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">#warning 该方法是私有API，上线会被拒</span><br><span class="line">// 由于每款手机同一颜色具体色号不一样，如 iPhone 6和 iPhone SE粉色的两个具体色值是不一样的，因此在这里只能返回一个色号</span><br><span class="line">UIDevice *device = [UIDevice currentDevice];</span><br><span class="line">SEL selector = NSSelectorFromString(@&quot;deviceInfoForKey:&quot;);</span><br><span class="line">if (![device respondsToSelector:selector]) &#123;</span><br><span class="line">selector = NSSelectorFromString(@&quot;_deviceInfoForKey:&quot;);</span><br><span class="line">&#125;</span><br><span class="line">if ([device respondsToSelector:selector]) &#123;</span><br><span class="line">// 消除警告“performSelector may cause a leak because its selector is unknown”</span><br><span class="line">IMP imp = [device methodForSelector:selector];</span><br><span class="line">NSString * (*func)(id, SEL, NSString *) = (void *)imp;</span><br><span class="line"></span><br><span class="line">NSString *deviceColor  = func(device, selector, @&quot;DeviceColor&quot;);</span><br><span class="line">NSString *deviceEnclosureColor  = func(device, selector, @&quot;DeviceEnclosureColor&quot;);</span><br><span class="line">NSLog(@&quot;deviceColor --&gt; %@ \n @&quot;deviceEnclosureColor --&gt; %@ &quot;, deviceColor, deviceEnclosureColor);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="mac-地址"><a href="#mac-地址" class="headerlink" title="mac 地址"></a>mac 地址</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">- (NSString *)getMacAddress &#123;</span><br><span class="line">int mib[6];</span><br><span class="line">size_t len;</span><br><span class="line">char *buf;</span><br><span class="line">unsigned char *ptr;</span><br><span class="line">struct if_msghdr *ifm;</span><br><span class="line">struct sockaddr_dl *sdl;</span><br><span class="line"></span><br><span class="line">mib[0] = CTL_NET;</span><br><span class="line">mib[1] = AF_ROUTE;</span><br><span class="line">mib[2] = 0;</span><br><span class="line">mib[3] = AF_LINK;</span><br><span class="line">mib[4] = NET_RT_IFLIST;</span><br><span class="line"></span><br><span class="line">if ((mib[5] = if_nametoindex(&quot;en0&quot;)) == 0) &#123;</span><br><span class="line">printf(&quot;Error: if_nametoindex error/n&quot;);</span><br><span class="line">return NULL;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">if (sysctl(mib, 6, NULL, &amp;len, NULL, 0) &lt; 0) &#123;</span><br><span class="line">printf(&quot;Error: sysctl, take 1/n&quot;);</span><br><span class="line">return NULL;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">if ((buf = malloc(len)) == NULL) &#123;</span><br><span class="line">printf(&quot;Could not allocate memory. error!/n&quot;);</span><br><span class="line">return NULL;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">if (sysctl(mib, 6, buf, &amp;len, NULL, 0) &lt; 0) &#123;</span><br><span class="line">printf(&quot;Error: sysctl, take 2&quot;);</span><br><span class="line">return NULL;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">ifm = (struct if_msghdr *)buf;</span><br><span class="line">sdl = (struct sockaddr_dl *)(ifm + 1);</span><br><span class="line">ptr = (unsigned char *)LLADDR(sdl);</span><br><span class="line"></span><br><span class="line">NSString *outstring = [NSString stringWithFormat:@&quot;%02x%02x%02x%02x%02x%02x&quot;, *ptr, *(ptr+1), *(ptr+2), *(ptr+3), *(ptr+4), *(ptr+5)];</span><br><span class="line">free(buf);</span><br><span class="line"></span><br><span class="line">return [outstring uppercaseString];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="IP地址"><a href="#IP地址" class="headerlink" title="IP地址"></a>IP地址</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line">- (NSString *)getDeviceIPAddresses &#123;</span><br><span class="line"></span><br><span class="line">int sockfd = socket(AF_INET, SOCK_DGRAM, 0);</span><br><span class="line"></span><br><span class="line">NSMutableArray *ips = [NSMutableArray array];</span><br><span class="line"></span><br><span class="line">int BUFFERSIZE = 4096;</span><br><span class="line"></span><br><span class="line">struct ifconf ifc;</span><br><span class="line"></span><br><span class="line">char buffer[BUFFERSIZE], *ptr, lastname[IFNAMSIZ], *cptr;</span><br><span class="line"></span><br><span class="line">struct ifreq *ifr, ifrcopy;</span><br><span class="line"></span><br><span class="line">ifc.ifc_len = BUFFERSIZE;</span><br><span class="line">ifc.ifc_buf = buffer;</span><br><span class="line"></span><br><span class="line">if (ioctl(sockfd, SIOCGIFCONF, &amp;ifc) &gt;= 0)&#123;</span><br><span class="line"></span><br><span class="line">for (ptr = buffer; ptr &lt; buffer + ifc.ifc_len; )&#123;</span><br><span class="line"></span><br><span class="line">ifr = (struct ifreq *)ptr;</span><br><span class="line">int len = sizeof(struct sockaddr);</span><br><span class="line"></span><br><span class="line">if (ifr-&gt;ifr_addr.sa_len &gt; len) &#123;</span><br><span class="line">len = ifr-&gt;ifr_addr.sa_len;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">ptr += sizeof(ifr-&gt;ifr_name) + len;</span><br><span class="line">if (ifr-&gt;ifr_addr.sa_family != AF_INET) continue;</span><br><span class="line">if ((cptr = (char *)strchr(ifr-&gt;ifr_name, &apos;:&apos;)) != NULL) *cptr = 0;</span><br><span class="line">if (strncmp(lastname, ifr-&gt;ifr_name, IFNAMSIZ) == 0) continue;</span><br><span class="line"></span><br><span class="line">memcpy(lastname, ifr-&gt;ifr_name, IFNAMSIZ);</span><br><span class="line">ifrcopy = *ifr;</span><br><span class="line">ioctl(sockfd, SIOCGIFFLAGS, &amp;ifrcopy);</span><br><span class="line"></span><br><span class="line">if ((ifrcopy.ifr_flags &amp; IFF_UP) == 0) continue;</span><br><span class="line"></span><br><span class="line">NSString *ip = [NSString  stringWithFormat:@&quot;%s&quot;, inet_ntoa(((struct sockaddr_in *)&amp;ifr-&gt;ifr_addr)-&gt;sin_addr)];</span><br><span class="line">[ips addObject:ip];</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">close(sockfd);</span><br><span class="line">NSString *deviceIP = @&quot;&quot;;</span><br><span class="line"></span><br><span class="line">for (int i=0; i &lt; ips.count; i++) &#123;</span><br><span class="line">if (ips.count &gt; 0) &#123;</span><br><span class="line">deviceIP = [NSString stringWithFormat:@&quot;%@&quot;,ips.lastObject];</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line">return deviceIP;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="CPU"><a href="#CPU" class="headerlink" title="CPU"></a>CPU</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line">// CPU总数目</span><br><span class="line">- (NSUInteger)getCPUCount &#123;</span><br><span class="line">return [NSProcessInfo processInfo].activeProcessorCount;</span><br><span class="line">&#125;</span><br><span class="line">// 已使用的CPU比例</span><br><span class="line">- (float)getCPUUsage &#123;</span><br><span class="line">float cpu = 0;</span><br><span class="line">NSArray *cpus = [self getPerCPUUsage];</span><br><span class="line">if (cpus.count == 0) return -1;</span><br><span class="line">for (NSNumber *n in cpus) &#123;</span><br><span class="line">cpu += n.floatValue;</span><br><span class="line">&#125;</span><br><span class="line">return cpu;</span><br><span class="line">&#125;</span><br><span class="line">// 获取每个cpu的使用比例</span><br><span class="line">- (NSArray *)getPerCPUUsage &#123;</span><br><span class="line">processor_info_array_t _cpuInfo, _prevCPUInfo = nil;</span><br><span class="line">mach_msg_type_number_t _numCPUInfo, _numPrevCPUInfo = 0;</span><br><span class="line">unsigned _numCPUs;</span><br><span class="line">NSLock *_cpuUsageLock;</span><br><span class="line"></span><br><span class="line">int _mib[2U] = &#123; CTL_HW, HW_NCPU &#125;;</span><br><span class="line">size_t _sizeOfNumCPUs = sizeof(_numCPUs);</span><br><span class="line">int _status = sysctl(_mib, 2U, &amp;_numCPUs, &amp;_sizeOfNumCPUs, NULL, 0U);</span><br><span class="line">if (_status)</span><br><span class="line">_numCPUs = 1;</span><br><span class="line"></span><br><span class="line">_cpuUsageLock = [[NSLock alloc] init];</span><br><span class="line"></span><br><span class="line">natural_t _numCPUsU = 0U;</span><br><span class="line">kern_return_t err = host_processor_info(mach_host_self(), PROCESSOR_CPU_LOAD_INFO, &amp;_numCPUsU, &amp;_cpuInfo, &amp;_numCPUInfo);</span><br><span class="line">if (err == KERN_SUCCESS) &#123;</span><br><span class="line">[_cpuUsageLock lock];</span><br><span class="line"></span><br><span class="line">NSMutableArray *cpus = [NSMutableArray new];</span><br><span class="line">for (unsigned i = 0U; i &lt; _numCPUs; ++i) &#123;</span><br><span class="line">Float32 _inUse, _total;</span><br><span class="line">if (_prevCPUInfo) &#123;</span><br><span class="line">_inUse = (</span><br><span class="line">(_cpuInfo[(CPU_STATE_MAX * i) + CPU_STATE_USER]   - _prevCPUInfo[(CPU_STATE_MAX * i) + CPU_STATE_USER])</span><br><span class="line">+ (_cpuInfo[(CPU_STATE_MAX * i) + CPU_STATE_SYSTEM] - _prevCPUInfo[(CPU_STATE_MAX * i) + CPU_STATE_SYSTEM])</span><br><span class="line">+ (_cpuInfo[(CPU_STATE_MAX * i) + CPU_STATE_NICE]   - _prevCPUInfo[(CPU_STATE_MAX * i) + CPU_STATE_NICE])</span><br><span class="line">);</span><br><span class="line">_total = _inUse + (_cpuInfo[(CPU_STATE_MAX * i) + CPU_STATE_IDLE] - _prevCPUInfo[(CPU_STATE_MAX * i) + CPU_STATE_IDLE]);</span><br><span class="line">&#125; else &#123;</span><br><span class="line">_inUse = _cpuInfo[(CPU_STATE_MAX * i) + CPU_STATE_USER] + _cpuInfo[(CPU_STATE_MAX * i) + CPU_STATE_SYSTEM] + _cpuInfo[(CPU_STATE_MAX * i) + CPU_STATE_NICE];</span><br><span class="line">_total = _inUse + _cpuInfo[(CPU_STATE_MAX * i) + CPU_STATE_IDLE];</span><br><span class="line">&#125;</span><br><span class="line">[cpus addObject:@(_inUse / _total)];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">[_cpuUsageLock unlock];</span><br><span class="line">if (_prevCPUInfo) &#123;</span><br><span class="line">size_t prevCpuInfoSize = sizeof(integer_t) * _numPrevCPUInfo;</span><br><span class="line">vm_deallocate(mach_task_self(), (vm_address_t)_prevCPUInfo, prevCpuInfoSize);</span><br><span class="line">&#125;</span><br><span class="line">return cpus;</span><br><span class="line">&#125; else &#123;</span><br><span class="line">return nil;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Disk磁盘空间"><a href="#Disk磁盘空间" class="headerlink" title="Disk磁盘空间"></a>Disk磁盘空间</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">// 获取磁盘总空间</span><br><span class="line">- (int64_t)getTotalDiskSpace &#123;</span><br><span class="line">NSError *error = nil;</span><br><span class="line">NSDictionary *attrs = [[NSFileManager defaultManager] attributesOfFileSystemForPath:NSHomeDirectory() error:&amp;error];</span><br><span class="line">if (error) return -1;</span><br><span class="line">int64_t space =  [[attrs objectForKey:NSFileSystemSize] longLongValue];</span><br><span class="line">if (space &lt; 0) space = -1;</span><br><span class="line">return space;</span><br><span class="line">&#125;</span><br><span class="line">// 获取未使用的磁盘空间</span><br><span class="line">- (int64_t)getFreeDiskSpace &#123;</span><br><span class="line">NSError *error = nil;</span><br><span class="line">NSDictionary *attrs = [[NSFileManager defaultManager] attributesOfFileSystemForPath:NSHomeDirectory() error:&amp;error];</span><br><span class="line">if (error) return -1;</span><br><span class="line">int64_t space =  [[attrs objectForKey:NSFileSystemFreeSize] longLongValue];</span><br><span class="line">if (space &lt; 0) space = -1;</span><br><span class="line">return space;</span><br><span class="line">&#125;</span><br><span class="line">// 获取已使用的磁盘空间</span><br><span class="line">- (int64_t)getUsedDiskSpace &#123;</span><br><span class="line">int64_t totalDisk = [self getTotalDiskSpace];</span><br><span class="line">int64_t freeDisk = [self getFreeDiskSpace];</span><br><span class="line">if (totalDisk &lt; 0 || freeDisk &lt; 0) return -1;</span><br><span class="line">int64_t usedDisk = totalDisk - freeDisk;</span><br><span class="line">if (usedDisk &lt; 0) usedDisk = -1;</span><br><span class="line">return usedDisk;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Memory内存相关数据"><a href="#Memory内存相关数据" class="headerlink" title="Memory内存相关数据"></a>Memory内存相关数据</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br></pre></td><td class="code"><pre><span class="line">// 系统总内存空间</span><br><span class="line">- (int64_t)getTotalMemory &#123;</span><br><span class="line">int64_t totalMemory = [[NSProcessInfo processInfo] physicalMemory];</span><br><span class="line">if (totalMemory &lt; -1) totalMemory = -1;</span><br><span class="line">return totalMemory;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 活跃的内存,正在使用或者很短时间内被使用过</span><br><span class="line">- (int64_t)getActiveMemory &#123;</span><br><span class="line">mach_port_t host_port = mach_host_self();</span><br><span class="line">mach_msg_type_number_t host_size = sizeof(vm_statistics_data_t) / sizeof(integer_t);</span><br><span class="line">vm_size_t page_size;</span><br><span class="line">vm_statistics_data_t vm_stat;</span><br><span class="line">kern_return_t kern;</span><br><span class="line"></span><br><span class="line">kern = host_page_size(host_port, &amp;page_size);</span><br><span class="line">if (kern != KERN_SUCCESS) return -1;</span><br><span class="line">kern = host_statistics(host_port, HOST_VM_INFO, (host_info_t)&amp;vm_stat, &amp;host_size);</span><br><span class="line">if (kern != KERN_SUCCESS) return -1;</span><br><span class="line">return vm_stat.active_count * page_size;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 最近使用过,但是目前处于不活跃状态的内存</span><br><span class="line">- (int64_t)getInActiveMemory &#123;</span><br><span class="line">mach_port_t host_port = mach_host_self();</span><br><span class="line">mach_msg_type_number_t host_size = sizeof(vm_statistics_data_t) / sizeof(integer_t);</span><br><span class="line">vm_size_t page_size;</span><br><span class="line">vm_statistics_data_t vm_stat;</span><br><span class="line">kern_return_t kern;</span><br><span class="line"></span><br><span class="line">kern = host_page_size(host_port, &amp;page_size);</span><br><span class="line">if (kern != KERN_SUCCESS) return -1;</span><br><span class="line">kern = host_statistics(host_port, HOST_VM_INFO, (host_info_t)&amp;vm_stat, &amp;host_size);</span><br><span class="line">if (kern != KERN_SUCCESS) return -1;</span><br><span class="line">return vm_stat.inactive_count * page_size;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 空闲的内存空间</span><br><span class="line">- (int64_t)getFreeMemory &#123;</span><br><span class="line">mach_port_t host_port = mach_host_self();</span><br><span class="line">mach_msg_type_number_t host_size = sizeof(vm_statistics_data_t) / sizeof(integer_t);</span><br><span class="line">vm_size_t page_size;</span><br><span class="line">vm_statistics_data_t vm_stat;</span><br><span class="line">kern_return_t kern;</span><br><span class="line"></span><br><span class="line">kern = host_page_size(host_port, &amp;page_size);</span><br><span class="line">if (kern != KERN_SUCCESS) return -1;</span><br><span class="line">kern = host_statistics(host_port, HOST_VM_INFO, (host_info_t)&amp;vm_stat, &amp;host_size);</span><br><span class="line">if (kern != KERN_SUCCESS) return -1;</span><br><span class="line">return vm_stat.free_count * page_size;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 已使用的内存空间</span><br><span class="line">- (int64_t)getUsedMemory &#123;</span><br><span class="line">mach_port_t host_port = mach_host_self();</span><br><span class="line">mach_msg_type_number_t host_size = sizeof(vm_statistics_data_t) / sizeof(integer_t);</span><br><span class="line">vm_size_t page_size;</span><br><span class="line">vm_statistics_data_t vm_stat;</span><br><span class="line">kern_return_t kern;</span><br><span class="line"></span><br><span class="line">kern = host_page_size(host_port, &amp;page_size);</span><br><span class="line">if (kern != KERN_SUCCESS) return -1;</span><br><span class="line">kern = host_statistics(host_port, HOST_VM_INFO, (host_info_t)&amp;vm_stat, &amp;host_size);</span><br><span class="line">if (kern != KERN_SUCCESS) return -1;</span><br><span class="line">return page_size * (vm_stat.active_count + vm_stat.inactive_count + vm_stat.wire_count);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 用来存放内核和数据结构的内存,framework、用户级别的应用无法分配</span><br><span class="line">- (int64_t)getWiredMemory &#123;</span><br><span class="line">mach_port_t host_port = mach_host_self();</span><br><span class="line">mach_msg_type_number_t host_size = sizeof(vm_statistics_data_t) / sizeof(integer_t);</span><br><span class="line">vm_size_t page_size;</span><br><span class="line">vm_statistics_data_t vm_stat;</span><br><span class="line">kern_return_t kern;</span><br><span class="line"></span><br><span class="line">kern = host_page_size(host_port, &amp;page_size);</span><br><span class="line">if (kern != KERN_SUCCESS) return -1;</span><br><span class="line">kern = host_statistics(host_port, HOST_VM_INFO, (host_info_t)&amp;vm_stat, &amp;host_size);</span><br><span class="line">if (kern != KERN_SUCCESS) return -1;</span><br><span class="line">return vm_stat.wire_count * page_size;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 可释放的内存空间：内存吃紧自动释放，针对大对象存放所需的大块内存空间</span><br><span class="line">- (int64_t)getPurgableMemory &#123;</span><br><span class="line">mach_port_t host_port = mach_host_self();</span><br><span class="line">mach_msg_type_number_t host_size = sizeof(vm_statistics_data_t) / sizeof(integer_t);</span><br><span class="line">vm_size_t page_size;</span><br><span class="line">vm_statistics_data_t vm_stat;</span><br><span class="line">kern_return_t kern;</span><br><span class="line"></span><br><span class="line">kern = host_page_size(host_port, &amp;page_size);</span><br><span class="line">if (kern != KERN_SUCCESS) return -1;</span><br><span class="line">kern = host_statistics(host_port, HOST_VM_INFO, (host_info_t)&amp;vm_stat, &amp;host_size);</span><br><span class="line">if (kern != KERN_SUCCESS) return -1;</span><br><span class="line">return vm_stat.purgeable_count * page_size;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://upload-images.jianshu.io/upload_images/1501122-bcb3df6118144069.png" alt></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/1501122-81fc7ac3cfbba8c5.png" alt></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/1501122-bb83fb377f24cf11.png" alt></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/1501122-f6ab41fd6e235ced.png" alt></p>
+<blockquote>
+<p>作者：si1ence<br>链接：<a href="https://www.jianshu.com/p/b23016bb97af" target="_blank" rel="noopener">https://www.jianshu.com/p/b23016bb97af</a><br>來源：简书</p>
+</blockquote>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+   
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://bigporo.github.io/2019/04/23/RunLoop详解/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -395,125 +865,198 @@
 
       
         
-          
-            <blockquote>
-<p><a href="https://blog.ibireme.com/2015/05/18/runloop/" target="_blank" rel="noopener">ibireme：深入理解RunLoop</a></p>
-</blockquote>
-<blockquote>
-<p><a href="http://v.youku.com/v_show/id_XODgxODkzODI0.html" target="_blank" rel="noopener">iOS线下分享《RunLoop》by 孙源@sunnyxx</a></p>
-</blockquote>
-<h1 id="RunLoop-详解"><a href="#RunLoop-详解" class="headerlink" title="RunLoop 详解"></a>RunLoop 详解</h1><p><img src="https://timgsa.baidu.com/timg?image&amp;quality=80&amp;size=b9999_10000&amp;sec=1556102770809&amp;di=cecb810651794131ff752b0b9f806be9&amp;imgtype=0&amp;src=http%3A%2F%2Fcc.cocimg.com%2Fapi%2Fuploads%2F20150528%2F1432799466416554.jpeg" alt></p>
-<h3 id="RunLoop的概念"><a href="#RunLoop的概念" class="headerlink" title="RunLoop的概念"></a>RunLoop的概念</h3><p>一般来讲，一个线程一次只能执行一个任务，在执行完一个任务之后线程就退出了。通过RunLoop,我们可以让一个线程可以随时处理任务而不退出。</p>
-<p>&lt;! – more –&gt;<br>通常的代码逻辑是这样的：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">function loop()</span><br><span class="line">&#123;</span><br><span class="line">do &#123;</span><br><span class="line">var message = get_next_message();</span><br><span class="line">process_message(message);</span><br><span class="line">&#125; while (message != quit);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<blockquote>
-<p>这种模型通常被称作 Event Loop。 Event Loop 在很多系统和框架里都有实现，比如 Node.js 的事件处理，比如 Windows 程序的消息循环，再比如 OSX/iOS 里的 RunLoop。实现这种模型的关键点在于：如何管理事件/消息，如何让线程在没有处理消息时休眠以避免资源占用、在有消息到来时立刻被唤醒。</p>
-</blockquote>
-<p>所以，<strong>RunLoop 实际上就是一个对象，这个对象管理了其需要处理的事件和消息，并提供了一个入口函数来执行上面 Event Loop 的逻辑</strong>。线程执行了这个函数后，就会一直处于这个函数内部 “接受消息-&gt;等待-&gt;处理” 的循环中，直到这个循环结束（比如传入 quit 的消息），函数返回。</p>
-<p>OSX/iOS 系统中，提供了两个这样的对象：NSRunLoop 和 CFRunLoopRef。<br>CFRunLoopRef 是在 CoreFoundation 框架内的，它提供了纯 C 函数的 API，所有这些 API 都是线程安全的。<br>NSRunLoop 是基于 CFRunLoopRef 的封装，提供了面向对象的 API，但是这些 API 不是线程安全的。</p>
-<h3 id="RunLoop与线程之间的关系"><a href="#RunLoop与线程之间的关系" class="headerlink" title="RunLoop与线程之间的关系"></a>RunLoop与线程之间的关系</h3><p><strong>CFRunLoop 是基于 pthread 来管理的。</strong></p>
-<p><strong>线程和 RunLoop 之间是一一对应的，其关系是保存在一个全局的 Dictionary 里。RunLoop是可以嵌套的</strong>。线程刚创建时并没有 RunLoop，如果你不主动获取，那它一直都不会有。RunLoop 的创建是发生在第一次获取时，RunLoop 的销毁是发生在线程结束时。你只能在一个线程的内部获取其 RunLoop（主线程除外）。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">/// 全局的Dictionary，key 是 pthread_t， value 是 CFRunLoopRef</span><br><span class="line">static CFMutableDictionaryRef loopsDic;</span><br><span class="line">/// 访问 loopsDic 时的锁</span><br><span class="line">static CFSpinLock_t loopsLock;</span><br><span class="line"></span><br><span class="line">/// 获取一个 pthread 对应的 RunLoop。</span><br><span class="line">CFRunLoopRef _CFRunLoopGet(pthread_t thread) &#123;</span><br><span class="line">OSSpinLockLock(&amp;loopsLock);</span><br><span class="line"></span><br><span class="line">if (!loopsDic) &#123;</span><br><span class="line">// 第一次进入时，初始化全局Dic，并先为主线程创建一个 RunLoop。</span><br><span class="line">loopsDic = CFDictionaryCreateMutable();</span><br><span class="line">CFRunLoopRef mainLoop = _CFRunLoopCreate();</span><br><span class="line">CFDictionarySetValue(loopsDic, pthread_main_thread_np(), mainLoop);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/// 直接从 Dictionary 里获取。</span><br><span class="line">CFRunLoopRef loop = CFDictionaryGetValue(loopsDic, thread));</span><br><span class="line"></span><br><span class="line">if (!loop) &#123;</span><br><span class="line">/// 取不到时，创建一个</span><br><span class="line">loop = _CFRunLoopCreate();</span><br><span class="line">CFDictionarySetValue(loopsDic, thread, loop);</span><br><span class="line">/// 注册一个回调，当线程销毁时，顺便也销毁其对应的 RunLoop。</span><br><span class="line">_CFSetTSD(..., thread, loop, __CFFinalizeRunLoop);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">OSSpinLockUnLock(&amp;loopsLock);</span><br><span class="line">return loop;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">CFRunLoopRef CFRunLoopGetMain() &#123;</span><br><span class="line">return _CFRunLoopGet(pthread_main_thread_np());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">CFRunLoopRef CFRunLoopGetCurrent() &#123;</span><br><span class="line">return _CFRunLoopGet(pthread_self());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="RunLoop提供的接口"><a href="#RunLoop提供的接口" class="headerlink" title="RunLoop提供的接口"></a>RunLoop提供的接口</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;CoreFoundation/CFRunLoop.h&gt;</span><br></pre></td></tr></table></figure>
-<p>在 CoreFoundation 里面关于 RunLoop 有5个类:</p>
-<p>CFRunLoopRef</p>
-<p>CFRunLoopModeRef</p>
-<p>CFRunLoopSourceRef</p>
-<p>CFRunLoopTimerRef</p>
-<p>CFRunLoopObserverRef</p>
-<p><img src="https://ws4.sinaimg.cn/large/006tNc79ly1fz9dc962fwj31c209cq5j.jpg" alt="图片.png"></p>
-<p>其中 CFRunLoopModeRef 类并没有对外暴露，只是通过 CFRunLoopRef 的接口进行了封装。</p>
-<p>他们的关系如下:<br><img src="https://blog.ibireme.com/wp-content/uploads/2015/05/RunLoop_0.png" alt></p>
-<p>一个 RunLoop 包含若干个 Mode，每个 Mode 又包含若干个 Source/Timer/Observer。每次调用 RunLoop 的主函数时，<strong>只能指定其中一个 Mode，这个Mode被称作 CurrentMode</strong>。如果需要切换 Mode，只能退出 Loop，再重新指定一个 Mode 进入。这样做主要是为了分隔开不同组的 Source/Timer/Observer，让其互不影响。</p>
-<p><strong>CFRunLoopSourceRef是事件产生的地方</strong>。<br>Source有两个版本：Source0 和 Source1。</p>
-<ul>
-<li><p>Source0 只包含了一个回调（函数指针），它并不能主动触发事件。使用时，你需要先调用 CFRunLoopSourceSignal(source)，将这个 Source 标记为待处理，然后手动调用 CFRunLoopWakeUp(runloop) 来唤醒 RunLoop，让其处理这个事件。</p>
-<blockquote>
-<p>处理APP内部事件、APP自己负责管理(触发)，如UIEvent等</p>
-</blockquote>
-</li>
-<li><p>Source1 包含了一个 mach_port 和一个回调（函数指针），被用于通过内核和其他线程相互发送消息。这种 Source 能主动唤醒 RunLoop 的线程，其原理在下面会讲到。</p>
-<blockquote>
-<p>由RunLoop和内核管理，Mach Port 驱动，如CFMachPort,CFMessagePort</p>
-</blockquote>
-</li>
-</ul>
-<p><strong>CFRunLoopTimerRef 是基于时间的触发器</strong>，它和 NSTimer 是toll-free bridged 的，可以混用。其包含一个时间长度和一个回调（函数指针）。<strong>当其加入到 RunLoop 时，RunLoop会注册对应的时间点，当时间点到时，RunLoop会被唤醒以执行那个回调</strong>。</p>
-<p><strong>CFRunLoopObserverRef 是观察者</strong>，每个 Observer 都包含了一个回调（函数指针），当 RunLoop 的状态发生变化时，观察者就能通过回调接受到这个变化。可以观测的时间点有以下几个：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">typedef CF_OPTIONS(CFOptionFlags, CFRunLoopActivity) &#123;</span><br><span class="line">kCFRunLoopEntry         = (1UL &lt;&lt; 0), // 即将进入Loop</span><br><span class="line">kCFRunLoopBeforeTimers  = (1UL &lt;&lt; 1), // 即将处理 Timer</span><br><span class="line">kCFRunLoopBeforeSources = (1UL &lt;&lt; 2), // 即将处理 Source</span><br><span class="line">kCFRunLoopBeforeWaiting = (1UL &lt;&lt; 5), // 即将进入休眠</span><br><span class="line">kCFRunLoopAfterWaiting  = (1UL &lt;&lt; 6), // 刚从休眠中唤醒</span><br><span class="line">kCFRunLoopExit          = (1UL &lt;&lt; 7), // 即将退出Loop</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
-<p>上面的 Source/Timer/Observer 被统称为<strong>mode item</strong>，一个 item 可以被同时加入多个 mode。但一个 item 被重复加入同一个 mode 时是不会有效果的。如果一个 mode 中一个 item 都没有，则 RunLoop 会直接退出，不进入循环。</p>
-<h3 id="RunLoop的Mode"><a href="#RunLoop的Mode" class="headerlink" title="RunLoop的Mode"></a>RunLoop的Mode</h3><p>CFRunLoopMode 和 CFRunLoop 的结构大致如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">struct __CFRunLoopMode &#123;</span><br><span class="line">CFStringRef _name;            // Mode Name, 例如 @&quot;kCFRunLoopDefaultMode&quot;</span><br><span class="line">CFMutableSetRef _sources0;    // Set</span><br><span class="line">CFMutableSetRef _sources1;    // Set</span><br><span class="line">CFMutableArrayRef _observers; // Array</span><br><span class="line">CFMutableArrayRef _timers;    // Array</span><br><span class="line">...</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">struct __CFRunLoop &#123;</span><br><span class="line">CFMutableSetRef _commonModes;     // Set</span><br><span class="line">CFMutableSetRef _commonModeItems; // Set&lt;Source/Observer/Timer&gt;</span><br><span class="line">CFRunLoopModeRef _currentMode;    // Current Runloop Mode</span><br><span class="line">CFMutableSetRef _modes;           // Set</span><br><span class="line">...</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>这里有个概念叫 “<strong>CommonModes</strong>”：一个 Mode 可以将自己标记为”Common”属性（通过将其 ModeName 添加到 RunLoop 的 “commonModes” 中）。每当 RunLoop 的内容发生变化时，RunLoop 都会自动将 _commonModeItems 里的 Source/Observer/Timer 同步到具有 “Common” 标记的所有Mode里。</p>
-<p><strong>应用场景举例</strong>：主线程的 RunLoop 里有两个预置的 Mode：kCFRunLoopDefaultMode 和 UITrackingRunLoopMode。这两个 Mode 都已经被标记为“Common”属性。DefaultMode 是 App 平时所处的状态，TrackingRunLoopMode 是追踪 ScrollView 滑动时的状态。当你创建一个 Timer 并加到 DefaultMode 时，Timer 会得到重复回调，但此时滑动一个TableView时，RunLoop 会将 mode 切换为 TrackingRunLoopMode，这时 Timer 就不会被回调，并且也不会影响到滑动操作。</p>
-<p>有时你需要一个 Timer，在两个 Mode 中都能得到回调，一种办法就是将这个 Timer 分别加入这两个 Mode。还有一种方式，就是将 Timer 加入到顶层的 RunLoop 的 “commonModeItems” 中。”commonModeItems” 被 RunLoop自动更新到所有具有”Common”属性的 Mode 里去。</p>
-<p>CFRunLoop对外暴露的管理 Mode 接口只有下面2个:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">CFRunLoopAddCommonMode(CFRunLoopRef runloop, CFStringRef modeName);</span><br><span class="line">CFRunLoopRunInMode(CFStringRef modeName, ...);</span><br></pre></td></tr></table></figure>
-<p>Mode 暴露的管理 mode item 的接口有下面几个：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">CFRunLoopAddSource(CFRunLoopRef rl, CFRunLoopSourceRef source, CFStringRef modeName);</span><br><span class="line">CFRunLoopAddObserver(CFRunLoopRef rl, CFRunLoopObserverRef observer, CFStringRef modeName);</span><br><span class="line">CFRunLoopAddTimer(CFRunLoopRef rl, CFRunLoopTimerRef timer, CFStringRef mode);</span><br><span class="line">CFRunLoopRemoveSource(CFRunLoopRef rl, CFRunLoopSourceRef source, CFStringRef modeName);</span><br><span class="line">CFRunLoopRemoveObserver(CFRunLoopRef rl, CFRunLoopObserverRef observer, CFStringRef modeName);</span><br><span class="line">CFRunLoopRemoveTimer(CFRunLoopRef rl, CFRunLoopTimerRef timer, CFStringRef mode);</span><br></pre></td></tr></table></figure></p>
-<p><strong>你只能通过 mode name 来操作内部的 mode，当你传入一个新的 mode name 但 RunLoop 内部没有对应 mode 时，RunLoop会自动帮你创建对应的 CFRunLoopModeRef。对于一个 RunLoop 来说，其内部的 mode 只能增加不能删除。</strong></p>
-<p>苹果公开提供的 Mode 有两个：kCFRunLoopDefaultMode (NSDefaultRunLoopMode) 和 UITrackingRunLoopMode，你可以用这两个 Mode Name 来操作其对应的 Mode。<br>还有一个私有的Mode是UIInitializationRunLoopMode, 在刚启动 App 时第进入的第一个 Mode，启动完成后就不再使用。</p>
-<p>同时苹果还提供了一个操作 Common 标记的字符串：kCFRunLoopCommonModes (NSRunLoopCommonModes)，你可以用这个字符串来操作 Common Items，或标记一个 Mode 为 “Common”。使用时注意区分这个字符串和其他 mode name。</p>
-<h3 id="RunLoop内部逻辑"><a href="#RunLoop内部逻辑" class="headerlink" title="RunLoop内部逻辑"></a>RunLoop内部逻辑</h3><p>RunLoop 内部的逻辑大致如下:</p>
-<p><img src="https://blog.ibireme.com/wp-content/uploads/2015/05/RunLoop_1.png" alt></p>
-<p>其内部代码整理如下:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br></pre></td><td class="code"><pre><span class="line">/// 用DefaultMode启动</span><br><span class="line">void CFRunLoopRun(void) &#123;</span><br><span class="line">CFRunLoopRunSpecific(CFRunLoopGetCurrent(), kCFRunLoopDefaultMode, 1.0e10, false);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/// 用指定的Mode启动，允许设置RunLoop超时时间</span><br><span class="line">int CFRunLoopRunInMode(CFStringRef modeName, CFTimeInterval seconds, Boolean stopAfterHandle) &#123;</span><br><span class="line">return CFRunLoopRunSpecific(CFRunLoopGetCurrent(), modeName, seconds, returnAfterSourceHandled);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/// RunLoop的实现</span><br><span class="line">int CFRunLoopRunSpecific(runloop, modeName, seconds, stopAfterHandle) &#123;</span><br><span class="line"></span><br><span class="line">/// 首先根据modeName找到对应mode</span><br><span class="line">CFRunLoopModeRef currentMode = __CFRunLoopFindMode(runloop, modeName, false);</span><br><span class="line">/// 如果mode里没有source/timer/observer, 直接返回。</span><br><span class="line">if (__CFRunLoopModeIsEmpty(currentMode)) return;</span><br><span class="line"></span><br><span class="line">/// 1. 通知 Observers: RunLoop 即将进入 loop。</span><br><span class="line">__CFRunLoopDoObservers(runloop, currentMode, kCFRunLoopEntry);</span><br><span class="line"></span><br><span class="line">/// 内部函数，进入loop</span><br><span class="line">__CFRunLoopRun(runloop, currentMode, seconds, returnAfterSourceHandled) &#123;</span><br><span class="line"></span><br><span class="line">Boolean sourceHandledThisLoop = NO;</span><br><span class="line">int retVal = 0;</span><br><span class="line">do &#123;</span><br><span class="line"></span><br><span class="line">/// 2. 通知 Observers: RunLoop 即将触发 Timer 回调。</span><br><span class="line">__CFRunLoopDoObservers(runloop, currentMode, kCFRunLoopBeforeTimers);</span><br><span class="line">/// 3. 通知 Observers: RunLoop 即将触发 Source0 (非port) 回调。</span><br><span class="line">__CFRunLoopDoObservers(runloop, currentMode, kCFRunLoopBeforeSources);</span><br><span class="line">/// 执行被加入的block</span><br><span class="line">__CFRunLoopDoBlocks(runloop, currentMode);</span><br><span class="line"></span><br><span class="line">/// 4. RunLoop 触发 Source0 (非port) 回调。</span><br><span class="line">sourceHandledThisLoop = __CFRunLoopDoSources0(runloop, currentMode, stopAfterHandle);</span><br><span class="line">/// 执行被加入的block</span><br><span class="line">__CFRunLoopDoBlocks(runloop, currentMode);</span><br><span class="line"></span><br><span class="line">/// 5. 如果有 Source1 (基于port) 处于 ready 状态，直接处理这个 Source1 然后跳转去处理消息。</span><br><span class="line">if (__Source0DidDispatchPortLastTime) &#123;</span><br><span class="line">Boolean hasMsg = __CFRunLoopServiceMachPort(dispatchPort, &amp;msg)</span><br><span class="line">if (hasMsg) goto handle_msg;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/// 通知 Observers: RunLoop 的线程即将进入休眠(sleep)。</span><br><span class="line">if (!sourceHandledThisLoop) &#123;</span><br><span class="line">__CFRunLoopDoObservers(runloop, currentMode, kCFRunLoopBeforeWaiting);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/// 7. 调用 mach_msg 等待接受 mach_port 的消息。线程将进入休眠, 直到被下面某一个事件唤醒。</span><br><span class="line">/// • 一个基于 port 的Source 的事件。</span><br><span class="line">/// • 一个 Timer 到时间了</span><br><span class="line">/// • RunLoop 自身的超时时间到了</span><br><span class="line">/// • 被其他什么调用者手动唤醒</span><br><span class="line">__CFRunLoopServiceMachPort(waitSet, &amp;msg, sizeof(msg_buffer), &amp;livePort) &#123;</span><br><span class="line">mach_msg(msg, MACH_RCV_MSG, port); // thread wait for receive msg</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/// 8. 通知 Observers: RunLoop 的线程刚刚被唤醒了。</span><br><span class="line">__CFRunLoopDoObservers(runloop, currentMode, kCFRunLoopAfterWaiting);</span><br><span class="line"></span><br><span class="line">/// 收到消息，处理消息。</span><br><span class="line">handle_msg:</span><br><span class="line"></span><br><span class="line">/// 9.1 如果一个 Timer 到时间了，触发这个Timer的回调。</span><br><span class="line">if (msg_is_timer) &#123;</span><br><span class="line">__CFRunLoopDoTimers(runloop, currentMode, mach_absolute_time())</span><br><span class="line">&#125; </span><br><span class="line"></span><br><span class="line">/// 9.2 如果有dispatch到main_queue的block，执行block。</span><br><span class="line">else if (msg_is_dispatch) &#123;</span><br><span class="line">__CFRUNLOOP_IS_SERVICING_THE_MAIN_DISPATCH_QUEUE__(msg);</span><br><span class="line">&#125; </span><br><span class="line"></span><br><span class="line">/// 9.3 如果一个 Source1 (基于port) 发出事件了，处理这个事件</span><br><span class="line">else &#123;</span><br><span class="line">CFRunLoopSourceRef source1 = __CFRunLoopModeFindSourceForMachPort(runloop, currentMode, livePort);</span><br><span class="line">sourceHandledThisLoop = __CFRunLoopDoSource1(runloop, currentMode, source1, msg);</span><br><span class="line">if (sourceHandledThisLoop) &#123;</span><br><span class="line">mach_msg(reply, MACH_SEND_MSG, reply);</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/// 执行加入到Loop的block</span><br><span class="line">__CFRunLoopDoBlocks(runloop, currentMode);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if (sourceHandledThisLoop &amp;&amp; stopAfterHandle) &#123;</span><br><span class="line">/// 进入loop时参数说处理完事件就返回。</span><br><span class="line">retVal = kCFRunLoopRunHandledSource;</span><br><span class="line">&#125; else if (timeout) &#123;</span><br><span class="line">/// 超出传入参数标记的超时时间了</span><br><span class="line">retVal = kCFRunLoopRunTimedOut;</span><br><span class="line">&#125; else if (__CFRunLoopIsStopped(runloop)) &#123;</span><br><span class="line">/// 被外部调用者强制停止了</span><br><span class="line">retVal = kCFRunLoopRunStopped;</span><br><span class="line">&#125; else if (__CFRunLoopModeIsEmpty(runloop, currentMode)) &#123;</span><br><span class="line">/// source/timer/observer一个都没有了</span><br><span class="line">retVal = kCFRunLoopRunFinished;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/// 如果没超时，mode里没空，loop也没被停止，那继续loop。</span><br><span class="line">&#125; while (retVal == 0);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/// 10. 通知 Observers: RunLoop 即将退出。</span><br><span class="line">__CFRunLoopDoObservers(rl, currentMode, kCFRunLoopExit);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>可以看到，实际上 RunLoop 就是这样一个函数，其内部是一个 do-while 循环。当你调用 CFRunLoopRun() 时，线程就会一直停留在这个循环里；直到超时或被手动停止，该函数才会返回。</p>
-<h3 id="RunLoop底层实现"><a href="#RunLoop底层实现" class="headerlink" title="RunLoop底层实现"></a>RunLoop底层实现</h3><p>RunLoop 的核心是基于 mach port 的，其进入休眠时调用的函数是 mach_msg()。</p>
-<p>为了实现消息的发送和接收，mach_msg() 函数实际上是调用了一个 Mach 陷阱 (trap)，即函数mach_msg_trap()，陷阱这个概念在 Mach 中等同于系统调用。当你在用户态调用 mach_msg_trap() 时会触发陷阱机制，切换到内核态；内核态中内核实现的 mach_msg() 函数会完成实际的工作，如下图：<br><img src="https://blog.ibireme.com/wp-content/uploads/2015/05/RunLoop_5.png" alt="image"></p>
-<h3 id="苹果用-RunLoop-实现的功能"><a href="#苹果用-RunLoop-实现的功能" class="headerlink" title="苹果用 RunLoop 实现的功能"></a>苹果用 RunLoop 实现的功能</h3><p>首先我们可以看一下 App 启动后 RunLoop 的状态：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br></pre></td><td class="code"><pre><span class="line">CFRunLoop &#123;</span><br><span class="line">current mode = kCFRunLoopDefaultMode</span><br><span class="line">common modes = &#123;</span><br><span class="line">UITrackingRunLoopMode</span><br><span class="line">kCFRunLoopDefaultMode</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">common mode items = &#123;</span><br><span class="line"></span><br><span class="line">// source0 (manual)</span><br><span class="line">CFRunLoopSource &#123;order =-1, &#123;</span><br><span class="line">callout = _UIApplicationHandleEventQueue&#125;&#125;</span><br><span class="line">CFRunLoopSource &#123;order =-1, &#123;</span><br><span class="line">callout = PurpleEventSignalCallback &#125;&#125;</span><br><span class="line">CFRunLoopSource &#123;order = 0, &#123;</span><br><span class="line">callout = FBSSerialQueueRunLoopSourceHandler&#125;&#125;</span><br><span class="line"></span><br><span class="line">// source1 (mach port)</span><br><span class="line">CFRunLoopSource &#123;order = 0,  &#123;port = 17923&#125;&#125;</span><br><span class="line">CFRunLoopSource &#123;order = 0,  &#123;port = 12039&#125;&#125;</span><br><span class="line">CFRunLoopSource &#123;order = 0,  &#123;port = 16647&#125;&#125;</span><br><span class="line">CFRunLoopSource &#123;order =-1, &#123;</span><br><span class="line">callout = PurpleEventCallback&#125;&#125;</span><br><span class="line">CFRunLoopSource &#123;order = 0, &#123;port = 2407,</span><br><span class="line">callout = _ZL20notify_port_callbackP12__CFMachPortPvlS1_&#125;&#125;</span><br><span class="line">CFRunLoopSource &#123;order = 0, &#123;port = 1c03,</span><br><span class="line">callout = __IOHIDEventSystemClientAvailabilityCallback&#125;&#125;</span><br><span class="line">CFRunLoopSource &#123;order = 0, &#123;port = 1b03,</span><br><span class="line">callout = __IOHIDEventSystemClientQueueCallback&#125;&#125;</span><br><span class="line">CFRunLoopSource &#123;order = 1, &#123;port = 1903,</span><br><span class="line">callout = __IOMIGMachPortPortCallback&#125;&#125;</span><br><span class="line"></span><br><span class="line">// Ovserver</span><br><span class="line">CFRunLoopObserver &#123;order = -2147483647, activities = 0x1, // Entry</span><br><span class="line">callout = _wrapRunLoopWithAutoreleasePoolHandler&#125;</span><br><span class="line">CFRunLoopObserver &#123;order = 0, activities = 0x20,          // BeforeWaiting</span><br><span class="line">callout = _UIGestureRecognizerUpdateObserver&#125;</span><br><span class="line">CFRunLoopObserver &#123;order = 1999000, activities = 0xa0,    // BeforeWaiting | Exit</span><br><span class="line">callout = _afterCACommitHandler&#125;</span><br><span class="line">CFRunLoopObserver &#123;order = 2000000, activities = 0xa0,    // BeforeWaiting | Exit</span><br><span class="line">callout = _ZN2CA11Transaction17observer_callbackEP19__CFRunLoopObservermPv&#125;</span><br><span class="line">CFRunLoopObserver &#123;order = 2147483647, activities = 0xa0, // BeforeWaiting | Exit</span><br><span class="line">callout = _wrapRunLoopWithAutoreleasePoolHandler&#125;</span><br><span class="line"></span><br><span class="line">// Timer</span><br><span class="line">CFRunLoopTimer &#123;firing = No, interval = 3.1536e+09, tolerance = 0,</span><br><span class="line">next fire date = 453098071 (-4421.76019 @ 96223387169499),</span><br><span class="line">callout = _ZN2CAL14timer_callbackEP16__CFRunLoopTimerPv (QuartzCore.framework)&#125;</span><br><span class="line">&#125;,</span><br><span class="line"></span><br><span class="line">modes ＝ &#123;</span><br><span class="line">CFRunLoopMode  &#123;</span><br><span class="line">sources0 =  &#123; /* same as &apos;common mode items&apos; */ &#125;,</span><br><span class="line">sources1 =  &#123; /* same as &apos;common mode items&apos; */ &#125;,</span><br><span class="line">observers = &#123; /* same as &apos;common mode items&apos; */ &#125;,</span><br><span class="line">timers =    &#123; /* same as &apos;common mode items&apos; */ &#125;,</span><br><span class="line">&#125;,</span><br><span class="line"></span><br><span class="line">CFRunLoopMode  &#123;</span><br><span class="line">sources0 =  &#123; /* same as &apos;common mode items&apos; */ &#125;,</span><br><span class="line">sources1 =  &#123; /* same as &apos;common mode items&apos; */ &#125;,</span><br><span class="line">observers = &#123; /* same as &apos;common mode items&apos; */ &#125;,</span><br><span class="line">timers =    &#123; /* same as &apos;common mode items&apos; */ &#125;,</span><br><span class="line">&#125;,</span><br><span class="line"></span><br><span class="line">CFRunLoopMode  &#123;</span><br><span class="line">sources0 = &#123;</span><br><span class="line">CFRunLoopSource &#123;order = 0, &#123;</span><br><span class="line">callout = FBSSerialQueueRunLoopSourceHandler&#125;&#125;</span><br><span class="line">&#125;,</span><br><span class="line">sources1 = (null),</span><br><span class="line">observers = &#123;</span><br><span class="line">CFRunLoopObserver &gt;&#123;activities = 0xa0, order = 2000000,</span><br><span class="line">callout = _ZN2CA11Transaction17observer_callbackEP19__CFRunLoopObservermPv&#125;</span><br><span class="line">)&#125;,</span><br><span class="line">timers = (null),</span><br><span class="line">&#125;,</span><br><span class="line"></span><br><span class="line">CFRunLoopMode  &#123;</span><br><span class="line">sources0 = &#123;</span><br><span class="line">CFRunLoopSource &#123;order = -1, &#123;</span><br><span class="line">callout = PurpleEventSignalCallback&#125;&#125;</span><br><span class="line">&#125;,</span><br><span class="line">sources1 = &#123;</span><br><span class="line">CFRunLoopSource &#123;order = -1, &#123;</span><br><span class="line">callout = PurpleEventCallback&#125;&#125;</span><br><span class="line">&#125;,</span><br><span class="line">observers = (null),</span><br><span class="line">timers = (null),</span><br><span class="line">&#125;,</span><br><span class="line"></span><br><span class="line">CFRunLoopMode  &#123;</span><br><span class="line">sources0 = (null),</span><br><span class="line">sources1 = (null),</span><br><span class="line">observers = (null),</span><br><span class="line">timers = (null),</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>可以看到，系统默认注册了5个Mode:</p>
-<ol>
-<li><strong>kCFRunLoopDefaultMode</strong>: App的默认 Mode，通常主线程是在这个 Mode 下运行的。</li>
-<li><strong>UITrackingRunLoopMode</strong>: 界面跟踪 Mode，用于 ScrollView 追踪触摸滑动，保证界面滑动时不受其他 Mode 影响。</li>
-<li><strong>UIInitializationRunLoopMode</strong>: 在刚启动 App 时第进入的第一个 Mode，启动完成后就不再使用。</li>
-<li><strong>GSEventReceiveRunLoopMode</strong>: 接受系统事件的内部 Mode，通常用不到。</li>
-<li><strong>kCFRunLoopCommonModes</strong>: 这是一个占位的Mode,带有Common标记的字符串，没有实际作用。</li>
-</ol>
-<h4 id="AutoreleasePool"><a href="#AutoreleasePool" class="headerlink" title="AutoreleasePool"></a>AutoreleasePool</h4><p>App启动后，苹果在主线程 RunLoop 里注册了两个 Observer，其回调都是 _wrapRunLoopWithAutoreleasePoolHandler()。</p>
-<p>第一个 Observer 监视的事件是 Entry(即将进入Loop)，其回调内会调用 _objc_autoreleasePoolPush() 创建自动释放池。其 order 是-2147483647，优先级最高，保证创建释放池发生在其他所有回调之前。</p>
-<p>第二个 Observer 监视了两个事件： BeforeWaiting(准备进入休眠) 时调用_objc_autoreleasePoolPop() 和 _objc_autoreleasePoolPush() 释放旧的池并创建新池；Exit(即将退出Loop) 时调用 _objc_autoreleasePoolPop() 来释放自动释放池。这个 Observer 的 order 是 2147483647，优先级最低，保证其释放池子发生在其他所有回调之后。</p>
-<p><strong>小结：AutoreleasePool是在RunLoop即将开始的时候创建，是在RunLoop即将休眠时候释放。</strong></p>
-<p>在主线程执行的代码，通常是写在诸如事件回调、Timer回调内的。这些回调会被 RunLoop 创建好的 AutoreleasePool 环绕着，所以不会出现内存泄漏，开发者也不必显示创建 Pool 了。</p>
-<h4 id="事件响应"><a href="#事件响应" class="headerlink" title="事件响应"></a>事件响应</h4><p>苹果注册了一个 Source1 (基于 mach port 的) 用来接收系统事件，其回调函数为 __IOHIDEventSystemClientQueueCallback()。</p>
-<p>当一个硬件事件(触摸/锁屏/摇晃等)发生后，首先由 IOKit.framework 生成一个 IOHIDEvent 事件并由 SpringBoard 接收。这个过程的详细情况可以参考这里。SpringBoard 只接收按键(锁屏/静音等)，触摸，加速，接近传感器等几种 Event，随后用 mach port 转发给需要的App进程。随后苹果注册的那个 Source1 就会触发回调，并调用 _UIApplicationHandleEventQueue() 进行应用内部的分发。</p>
-<p>_UIApplicationHandleEventQueue() 会把 IOHIDEvent 处理并包装成 UIEvent 进行处理或分发，其中包括识别 UIGesture/处理屏幕旋转/发送给 UIWindow 等。通常事件比如 UIButton 点击、touchesBegin/Move/End/Cancel 事件都是在这个回调中完成的。</p>
-<h4 id="手势识别"><a href="#手势识别" class="headerlink" title="手势识别"></a>手势识别</h4><p>当上面的 _UIApplicationHandleEventQueue() 识别了一个手势时，其首先会调用 Cancel 将当前的 touchesBegin/Move/End 系列回调打断。随后系统将对应的 UIGestureRecognizer 标记为待处理。</p>
-<p>苹果注册了一个 Observer 监测 BeforeWaiting (Loop即将进入休眠) 事件，这个Observer的回调函数是 _UIGestureRecognizerUpdateObserver()，其内部会获取所有刚被标记为待处理的 GestureRecognizer，并执行GestureRecognizer的回调。</p>
-<p>当有 UIGestureRecognizer 的变化(创建/销毁/状态改变)时，这个回调都会进行相应处理。</p>
-<h4 id="界面更新"><a href="#界面更新" class="headerlink" title="界面更新"></a>界面更新</h4><p>当在操作 UI 时，比如改变了 Frame、更新了 UIView/CALayer 的层次时，或者手动调用了 UIView/CALayer 的 setNeedsLayout/setNeedsDisplay方法后，这个 UIView/CALayer 就被标记为待处理，并被提交到一个全局的容器去。</p>
-<p>苹果注册了一个 Observer 监听 BeforeWaiting(即将进入休眠) 和 Exit (即将退出Loop) 事件，回调去执行一个很长的函数：<br>_ZN2CA11Transaction17observer_callbackEP19__CFRunLoopObservermPv()。这个函数里会遍历所有待处理的 UIView/CAlayer 以执行实际的绘制和调整，并更新 UI 界面。</p>
-<h4 id="PerformSelecter"><a href="#PerformSelecter" class="headerlink" title="PerformSelecter"></a>PerformSelecter</h4><p>当调用 NSObject 的 performSelecter:afterDelay: 后，实际上其内部会创建一个 Timer 并添加到当前线程的 RunLoop 中。所以如果当前线程没有 RunLoop，则这个方法会失效。</p>
-<p>当调用 performSelector:onThread: 时，实际上其会创建一个 Timer 加到对应的线程去，同样的，如果对应线程没有 RunLoop 该方法也会失效。</p>
-<h4 id="关于GCD"><a href="#关于GCD" class="headerlink" title="关于GCD"></a>关于GCD</h4><p>实际上 RunLoop 底层也会用到 GCD 的东西，<del>比如 RunLoop 是用 dispatch_source_t 实现的 Timer</del>（评论中有人提醒，NSTimer 是用了 XNU 内核的 mk_timer，我也仔细调试了一下，发现 NSTimer 确实是由 mk_timer 驱动，而非 GCD 驱动的）。但同时 GCD 提供的某些接口也用到了 RunLoop， 例如 dispatch_async()。</p>
-<p>当调用 dispatch_async(dispatch_get_main_queue(), block) 时，libDispatch 会向主线程的 RunLoop 发送消息，RunLoop会被唤醒，并从消息中取得这个 block，并在回调 <strong>CFRUNLOOP_IS_SERVICING_THE_MAIN_DISPATCH_QUEUE</strong>() 里执行这个 block。但这个逻辑<strong>仅限于 dispatch 到主线程</strong>，dispatch 到其他线程仍然是由 libDispatch 处理的。</p>
-<h4 id="定时器"><a href="#定时器" class="headerlink" title="定时器"></a>定时器</h4><p>NSTimer 其实就是 CFRunLoopTimerRef，他们之间是 toll-free bridged 的。一个 NSTimer 注册到 RunLoop 后，RunLoop 会为其重复的时间点注册好事件。例如 10:00, 10:10, 10:20 这几个时间点。RunLoop为了节省资源，并不会在非常准确的时间点回调这个Timer。Timer 有个属性叫做 Tolerance (宽容度)，标示了当时间点到后，容许有多少最大误差。</p>
-<p>如果某个时间点被错过了，例如执行了一个很长的任务，则那个时间点的回调也会跳过去，不会延后执行。就比如等公交，如果 10:10 时我忙着玩手机错过了那个点的公交，那我只能等 10:20 这一趟了。</p>
-<p>CADisplayLink 是一个和屏幕刷新率一致的定时器（但实际实现原理更复杂，和 NSTimer 并不一样，其内部实际是操作了一个 Source）。如果在两次屏幕刷新之间执行了一个长任务，那其中就会有一帧被跳过去（和 NSTimer 相似），造成界面卡顿的感觉。在快速滑动TableView时，即使一帧的卡顿也会让用户有所察觉。Facebook 开源的 AsyncDisplayLink 就是为了解决界面卡顿的问题，其内部也用到了 RunLoop，</p>
-<h4 id="关于网络请求"><a href="#关于网络请求" class="headerlink" title="关于网络请求"></a>关于网络请求</h4><p>iOS 中，关于网络请求的接口自下至上有如下几层:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">CFSocket</span><br><span class="line">CFNetwork       -&gt;ASIHttpRequest</span><br><span class="line">NSURLConnection -&gt;AFNetworking</span><br><span class="line">NSURLSession    -&gt;AFNetworking2, Alamofire</span><br></pre></td></tr></table></figure>
-<ul>
-<li>CFSocket 是最底层的接口，只负责 socket 通信。</li>
-<li>CFNetwork 是基于 CFSocket 等接口的上层封装，ASIHttpRequest 工作于这一层。</li>
-<li>NSURLConnection 是基于 CFNetwork 的更高层的封装，提供面向对象的接口，AFNetworking 工作于这一层。</li>
-<li>NSURLSession 是 iOS7 中新增的接口，表面上是和 NSURLConnection 并列的，但底层仍然用到了 NSURLConnection 的部分功能 (比如 com.apple.NSURLConnectionLoader 线程)，AFNetworking2 和 Alamofire 工作于这一层。</li>
-</ul>
-<p>下面主要介绍下 NSURLConnection 的工作过程。</p>
-<p>通常使用 NSURLConnection 时，你会传入一个 Delegate，当调用了 [connection start] 后，这个 Delegate 就会不停收到事件回调。实际上，start 这个函数的内部会会获取 CurrentRunLoop，然后在其中的 DefaultMode 添加了4个 Source0 (即需要手动触发的Source)。CFMultiplexerSource 是负责各种 Delegate 回调的，CFHTTPCookieStorage 是处理各种 Cookie 的。</p>
-<p>当开始网络传输时，我们可以看到 NSURLConnection 创建了两个新线程：com.apple.NSURLConnectionLoader 和 com.apple.CFSocket.private。其中 CFSocket 线程是处理底层 socket 连接的。NSURLConnectionLoader 这个线程内部会使用 RunLoop 来接收底层 socket 的事件，并通过之前添加的 Source0 通知到上层的 Delegate。</p>
-<p><img src="https://blog.ibireme.com/wp-content/uploads/2015/05/RunLoop_network.png" alt><br>NSURLConnectionLoader 中的 RunLoop 通过一些基于 mach port 的 Source 接收来自底层 CFSocket 的通知。当收到通知后，其会在合适的时机向 CFMultiplexerSource 等 Source0 发送通知，同时唤醒 Delegate 线程的 RunLoop 来让其处理这些通知。CFMultiplexerSource 会在 Delegate 线程的 RunLoop 对 Delegate 执行实际的回调。</p>
-<h3 id="RunLoop-的实际应用举例"><a href="#RunLoop-的实际应用举例" class="headerlink" title="RunLoop 的实际应用举例"></a>RunLoop 的实际应用举例</h3><h4 id="AFNetworking"><a href="#AFNetworking" class="headerlink" title="AFNetworking"></a>AFNetworking</h4><p>AFURLConnectionOperation 这个类是基于 NSURLConnection 构建的，其希望能在后台线程接收 Delegate 回调。为此 AFNetworking 单独创建了一个线程，并在这个线程中启动了一个 RunLoop：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">+ (void)networkRequestThreadEntryPoint:(id)__unused object &#123;</span><br><span class="line">@autoreleasepool &#123;</span><br><span class="line">[[NSThread currentThread] setName:@&quot;AFNetworking&quot;];</span><br><span class="line">NSRunLoop *runLoop = [NSRunLoop currentRunLoop];</span><br><span class="line">[runLoop addPort:[NSMachPort port] forMode:NSDefaultRunLoopMode];</span><br><span class="line">[runLoop run];</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">+ (NSThread *)networkRequestThread &#123;</span><br><span class="line">static NSThread *_networkRequestThread = nil;</span><br><span class="line">static dispatch_once_t oncePredicate;</span><br><span class="line">dispatch_once(&amp;oncePredicate, ^&#123;</span><br><span class="line">_networkRequestThread = [[NSThread alloc] initWithTarget:self selector:@selector(networkRequestThreadEntryPoint:) object:nil];</span><br><span class="line">[_networkRequestThread start];</span><br><span class="line">&#125;);</span><br><span class="line">return _networkRequestThread;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>RunLoop 启动前内部必须要有至少一个 Timer/Observer/Source，所以 AFNetworking 在 [runLoop run] 之前先创建了一个新的 NSMachPort 添加进去了。通常情况下，调用者需要持有这个 NSMachPort (mach_port) 并在外部线程通过这个 port 发送消息到 loop 内；但此处添加 port 只是为了让 RunLoop 不至于退出，并没有用于实际的发送消息。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">- (void)start &#123;</span><br><span class="line">[self.lock lock];</span><br><span class="line">if ([self isCancelled]) &#123;</span><br><span class="line">[self performSelector:@selector(cancelConnection) onThread:[[self class] networkRequestThread] withObject:nil waitUntilDone:NO modes:[self.runLoopModes allObjects]];</span><br><span class="line">&#125; else if ([self isReady]) &#123;</span><br><span class="line">self.state = AFOperationExecutingState;</span><br><span class="line">[self performSelector:@selector(operationDidStart) onThread:[[self class] networkRequestThread] withObject:nil waitUntilDone:NO modes:[self.runLoopModes allObjects]];</span><br><span class="line">&#125;</span><br><span class="line">[self.lock unlock];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>当需要这个后台线程执行任务时，AFNetworking 通过调用 [NSObject performSelector:onThread:..] 将这个任务扔到了后台线程的 RunLoop 中。</p>
-<h4 id="AsyncDisplayKit"><a href="#AsyncDisplayKit" class="headerlink" title="AsyncDisplayKit"></a>AsyncDisplayKit</h4><p><a href="https://github.com/facebook/AsyncDisplayKit" target="_blank" rel="noopener">AsyncDisplayKit</a>是 Facebook 推出的用于保持界面流畅性的框架，其原理大致如下：</p>
-<p>UI 线程中一旦出现繁重的任务就会导致界面卡顿，这类任务通常分为3类：排版，绘制，UI对象操作。</p>
-<p>排版通常包括计算视图大小、计算文本高度、重新计算子式图的排版等操作。<br>绘制一般有文本绘制 (例如 CoreText)、图片绘制 (例如预先解压)、元素绘制 (Quartz)等操作。<br>UI对象操作通常包括 UIView/CALayer 等 UI 对象的创建、设置属性和销毁。</p>
-<p>其中前两类操作可以通过各种方法扔到后台线程执行，而最后一类操作只能在主线程完成，并且有时后面的操作需要依赖前面操作的结果 （例如TextView创建时可能需要提前计算出文本的大小）。ASDK 所做的，就是尽量将能放入后台的任务放入后台，不能的则尽量推迟 (例如视图的创建、属性的调整)。</p>
-<p>为此，ASDK 创建了一个名为 ASDisplayNode 的对象，并在内部封装了 UIView/CALayer，它具有和 UIView/CALayer 相似的属性，例如 frame、backgroundColor等。所有这些属性都可以在后台线程更改，开发者可以只通过 Node 来操作其内部的 UIView/CALayer，这样就可以将排版和绘制放入了后台线程。但是无论怎么操作，这些属性总需要在某个时刻同步到主线程的 UIView/CALayer 去。</p>
-<p>ASDK 仿照 QuartzCore/UIKit 框架的模式，实现了一套类似的界面更新的机制：即在主线程的 RunLoop 中添加一个 Observer，监听了 kCFRunLoopBeforeWaiting 和 kCFRunLoopExit 事件，在收到回调时，遍历所有之前放入队列的待处理的任务，然后一一执行。</p>
-<h4 id="TableView中实现平滑滚动延迟加载图片"><a href="#TableView中实现平滑滚动延迟加载图片" class="headerlink" title="TableView中实现平滑滚动延迟加载图片"></a>TableView中实现平滑滚动延迟加载图片</h4><p>利用CFRunLoopMode的特性，可以将图片的加载放到NSDefaultRunLoopMode的mode里，这样在滚动UITrackingRunLoopMode这个mode时不会被加载而影响到。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">UIImage *downloadedImage = ...;</span><br><span class="line">[self.avatarImageView performSelector:@selector(setImage:)</span><br><span class="line">withObject:downloadedImage</span><br><span class="line">afterDelay:0</span><br><span class="line">inModes:@[NSDefaultRunLoopMode]];</span><br></pre></td></tr></table></figure>
+          <p><img src="https://ws1.sinaimg.cn/large/006tNc79ly1g2dthpkisfj30dw050t8h.jpg" alt></p>
+<h1 id="RunLoop-详解"><a href="#RunLoop-详解" class="headerlink" title="RunLoop 详解"></a>RunLoop 详解</h1><h3 id="RunLoop的概念"><a href="#RunLoop的概念" class="headerlink" title="RunLoop的概念"></a>RunLoop的概念</h3><p>一般来讲，一个线程一次只能执行一个任务，在执行完一个任务之后线程就退出了。通过RunLoop,我们可以让一个线程可以随时处理任务而不退出。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/04/23/RunLoop详解/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+   
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://bigporo.github.io/2019/04/23/Runtime原理篇/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="iDog">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://ws2.sinaimg.cn/large/006tNc79ly1g2b8vkark5j304z050wel.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="iDog的精神时光屋">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/04/23/Runtime原理篇/" itemprop="url">Runtime原理篇</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-23T17:17:43+08:00">
+                2019-04-23
+              </time>
+            
+
+            
+
+            
+          </span>
 
           
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/iOS/" itemprop="url" rel="index">
+                    <span itemprop="name">iOS</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  6.2k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  25
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p><img src="https://ws4.sinaimg.cn/large/006tNc79ly1g2dtgtgmzkj30dw050gle.jpg" alt></p>
+<h3 id="Runtime介绍"><a href="#Runtime介绍" class="headerlink" title="Runtime介绍"></a>Runtime介绍</h3><blockquote>
+<p>Objective-C 扩展了 C 语言，并加入了面向对象特性和 Smalltalk 式的消息传递机制。而这个扩展的核心是一个用 C 和 编译语言 写的 Runtime 库。它是 Objective-C 面向对象和动态机制的基石。</p>
+</blockquote>
+<blockquote>
+<p>Objective-C 是一个动态语言，这意味着它不仅需要一个编译器，也需要一个运行时系统来动态得创建类和对象、进行消息传递和转发。理解 Objective-C 的 Runtime 机制可以帮我们更好的了解这个语言，适当的时候还能对语言进行扩展，从系统层面解决项目中的一些设计或技术问题。了解 Runtime ，要先了解它的核心 - 消息传递 （Messaging）</p>
+</blockquote>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/04/23/Runtime原理篇/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -777,7 +1320,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-count">5</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

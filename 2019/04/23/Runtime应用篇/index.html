@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+<script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+<link href="//cdn.bootcss.com/pace/1.0.2/themes/pink/pace-theme-flash.css" rel="stylesheet">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="iOS,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="前言Runtime简直就是做大型框架的利器。它的应用场景非常多，下面就介绍一些常见的应用场景。  关联对象(Objective-C Associated Objects)给分类增加属性 方法魔法(Method Swizzling)方法添加和替换和KVO实现 消息转发(热更新)解决Bug(JSPatch) 实现NSCoding的自动归档和自动解档 实现字典和模型的自动转换(MJExtension)">
+<meta name="keywords" content="iOS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Runtime应用篇">
+<meta property="og:url" content="https://bigporo.github.io/2019/04/23/Runtime应用篇/index.html">
+<meta property="og:site_name" content="iDog的精神时光屋">
+<meta property="og:description" content="前言Runtime简直就是做大型框架的利器。它的应用场景非常多，下面就介绍一些常见的应用场景。  关联对象(Objective-C Associated Objects)给分类增加属性 方法魔法(Method Swizzling)方法添加和替换和KVO实现 消息转发(热更新)解决Bug(JSPatch) 实现NSCoding的自动归档和自动解档 实现字典和模型的自动转换(MJExtension)">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://ws4.sinaimg.cn/large/006tNc79ly1g2dtgtgmzkj30dw050gle.jpg">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/301129-dbc739cb752e60c3.png">
+<meta property="og:updated_time" content="2019-04-24T08:47:58.657Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Runtime应用篇">
+<meta name="twitter:description" content="前言Runtime简直就是做大型框架的利器。它的应用场景非常多，下面就介绍一些常见的应用场景。  关联对象(Objective-C Associated Objects)给分类增加属性 方法魔法(Method Swizzling)方法添加和替换和KVO实现 消息转发(热更新)解决Bug(JSPatch) 实现NSCoding的自动归档和自动解档 实现字典和模型的自动转换(MJExtension)">
+<meta name="twitter:image" content="https://ws4.sinaimg.cn/large/006tNc79ly1g2dtgtgmzkj30dw050gle.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://bigporo.github.io/2019/04/23/Runtime应用篇/">
+
+
+
+
+
+  <title>Runtime应用篇 | iDog的精神时光屋</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a href="https://github.com/BigPoro" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewbox="0 0 250 250" style="fill:#fff; color:#151513; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">iDog的精神时光屋</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://bigporo.github.io/2019/04/23/Runtime应用篇/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="iDog">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://ws2.sinaimg.cn/large/006tNc79ly1g2b8vkark5j304z050wel.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="iDog的精神时光屋">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Runtime应用篇</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-23T17:17:43+08:00">
+                2019-04-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/iOS/" itemprop="url" rel="index">
+                    <span itemprop="name">iOS</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2.4k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  10
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><img src="https://ws4.sinaimg.cn/large/006tNc79ly1g2dtgtgmzkj30dw050gle.jpg" alt></p>
+<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>Runtime简直就是做大型框架的利器。它的应用场景非常多，下面就介绍一些常见的应用场景。</p>
+<ul>
+<li>关联对象(Objective-C Associated Objects)给分类增加属性</li>
+<li>方法魔法(Method Swizzling)方法添加和替换和KVO实现</li>
+<li>消息转发(热更新)解决Bug(JSPatch)</li>
+<li>实现NSCoding的自动归档和自动解档</li>
+<li>实现字典和模型的自动转换(MJExtension)</li>
+</ul>
+<h3 id="关联对象-Objective-C-Associated-Objects"><a href="#关联对象-Objective-C-Associated-Objects" class="headerlink" title="关联对象(Objective-C Associated Objects)"></a>关联对象(Objective-C Associated Objects)</h3><p>我们都是知道分类是不能自定义属性和变量的。如果在分类的声明中写@property 只能为其生成get 和 set 方法的声明，但无法生成成员变量，就是虽然点语法能调用出来，但程序执行后会crash。</p>
+<p>下面通过关联对象实现给分类添加属性。</p>
+<blockquote>
+<p>关联对象Runtime提供了下面几个接口：</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">//关联对象</span><br><span class="line">void objc_setAssociatedObject(id object, const void *key, id value, objc_AssociationPolicy policy)</span><br><span class="line">//获取关联的对象</span><br><span class="line">id objc_getAssociatedObject(id object, const void *key)</span><br><span class="line">//移除关联的对象</span><br><span class="line">void objc_removeAssociatedObjects(id object)</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>参数解释</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">id object：被关联的对象</span><br><span class="line">const void *key：关联的key，要求唯一</span><br><span class="line">id value：关联的对象</span><br><span class="line">objc_AssociationPolicy policy：内存管理的策略</span><br></pre></td></tr></table></figure>
+<p>通过关联对象实现的属性的内存管理也是有ARC管理的，所以我们只需要给定适当的内存策略就行了，不需要操心对象的释放。</p>
+<blockquote>
+<p>内存管理策略</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>内存策略</th>
+<th>属性修饰</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OBJC_ASSOCIATION_ASSIGN</td>
+<td>@property (assign) 或 @property (unsafe_unretained)</td>
+<td>指定一个关联对象的弱引用。</td>
+</tr>
+<tr>
+<td>OBJC_ASSOCIATION_RETAIN_NONATOMIC</td>
+<td>@property (nonatomic, strong)</td>
+<td>指定一个关联对象的强引用，不能被原子化使用。</td>
+</tr>
+<tr>
+<td>OBJC_ASSOCIATION_COPY_NONATOMIC</td>
+<td>@property (nonatomic, copy)</td>
+<td>指定一个关联对象的copy引用，不能被原子化使用</td>
+</tr>
+<tr>
+<td>OBJC_ASSOCIATION_RETAIN</td>
+<td>@property (atomic, strong)</td>
+<td>指定一个关联对象的强引用，能被原子化使用。</td>
+</tr>
+<tr>
+<td>OBJC_ASSOCIATION_COPY</td>
+<td>@property (atomic, copy)</td>
+<td>指定一个关联对象的copy引用，能被原子化使用。</td>
+</tr>
+</tbody>
+</table>
+<p>下面实现一个UIView的Category添加自定义属性defaultColor。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;ViewController.h&quot;</span><br><span class="line">#import &quot;objc/runtime.h&quot;</span><br><span class="line"></span><br><span class="line">@interface UIView (DefaultColor)</span><br><span class="line"></span><br><span class="line">@property (nonatomic, strong) UIColor *defaultColor;</span><br><span class="line"></span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">@implementation UIView (DefaultColor)</span><br><span class="line"></span><br><span class="line">@dynamic defaultColor;</span><br><span class="line"></span><br><span class="line">static char kDefaultColorKey;</span><br><span class="line"></span><br><span class="line">- (void)setDefaultColor:(UIColor *)defaultColor &#123;</span><br><span class="line">objc_setAssociatedObject(self, &amp;kDefaultColorKey, defaultColor, OBJC_ASSOCIATION_RETAIN_NONATOMIC);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (id)defaultColor &#123;</span><br><span class="line">return objc_getAssociatedObject(self, &amp;kDefaultColorKey);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">@interface ViewController ()</span><br><span class="line"></span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">@implementation ViewController</span><br><span class="line"></span><br><span class="line">- (void)viewDidLoad &#123;</span><br><span class="line">[super viewDidLoad];</span><br><span class="line">// Do any additional setup after loading the view, typically from a nib.</span><br><span class="line"></span><br><span class="line">UIView *test = [UIView new];</span><br><span class="line">test.defaultColor = [UIColor blackColor];</span><br><span class="line">NSLog(@&quot;%@&quot;, test.defaultColor);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<h3 id="方法魔法-Method-Swizzling"><a href="#方法魔法-Method-Swizzling" class="headerlink" title="方法魔法(Method Swizzling)"></a>方法魔法(Method Swizzling)</h3><h4 id="方法添加"><a href="#方法添加" class="headerlink" title="方法添加"></a>方法添加</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">//class_addMethod(Class  _Nullable __unsafe_unretained cls, SEL  _Nonnull name, IMP  _Nonnull imp, const char * _Nullable types)</span><br><span class="line">class_addMethod([self class], sel, (IMP)fooMethod, &quot;v@:&quot;);</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>参数解释</p>
+<ul>
+<li>cls 被添加方法的类</li>
+<li>name 添加的方法的名称的SEL</li>
+<li>imp 方法的实现。该函数必须至少要有两个参数，self,_cmd</li>
+<li>类型编码</li>
+</ul>
+</blockquote>
+<h4 id="方法替换"><a href="#方法替换" class="headerlink" title="方法替换"></a>方法替换</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// 获得某个类的类方法</span><br><span class="line">Method class_getClassMethod(Class cls , SEL name)</span><br><span class="line"></span><br><span class="line">// 获得某个类的实例对象方法</span><br><span class="line">Method class_getInstanceMethod(Class cls , SEL name)</span><br><span class="line"></span><br><span class="line">// 交换两个方法的实现</span><br><span class="line">void method_exchangeImplementations(Method m1 , Method m2)</span><br></pre></td></tr></table></figure>
+<p>示例如下:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">@implementation ViewController</span><br><span class="line"></span><br><span class="line">+ (void)load &#123;</span><br><span class="line">static dispatch_once_t onceToken;</span><br><span class="line">dispatch_once(&amp;onceToken, ^&#123;</span><br><span class="line">Class class = [self class];</span><br><span class="line">SEL originalSelector = @selector(viewDidLoad);</span><br><span class="line">SEL swizzledSelector = @selector(jkviewDidLoad);</span><br><span class="line"></span><br><span class="line">Method originalMethod = class_getInstanceMethod(class,originalSelector);</span><br><span class="line">Method swizzledMethod = class_getInstanceMethod(class,swizzledSelector);</span><br><span class="line"></span><br><span class="line">//judge the method named  swizzledMethod is already existed.</span><br><span class="line">BOOL didAddMethod = class_addMethod(class, originalSelector, method_getImplementation(swizzledMethod), method_getTypeEncoding(swizzledMethod));</span><br><span class="line">// if swizzledMethod is already existed.</span><br><span class="line">if (didAddMethod) &#123;</span><br><span class="line">class_replaceMethod(class, swizzledSelector, method_getImplementation(originalMethod), method_getTypeEncoding(originalMethod));</span><br><span class="line">&#125;</span><br><span class="line">else &#123;</span><br><span class="line">method_exchangeImplementations(originalMethod, swizzledMethod);</span><br><span class="line">&#125;</span><br><span class="line">&#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)jkviewDidLoad &#123;</span><br><span class="line">NSLog(@&quot;替换的方法&quot;);</span><br><span class="line"></span><br><span class="line">[self jkviewDidLoad];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)viewDidLoad &#123;</span><br><span class="line">NSLog(@&quot;自带的方法&quot;);</span><br><span class="line"></span><br><span class="line">[super viewDidLoad];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p> 在 Objective-C 的运行时中，每个类有两个方法都会自动调用。<strong>+load 是在一个类被初始装载时调用，+initialize 是在应用第一次调用该类的类方法或实例方法前调用的</strong>。两个方法都是可选的，并且只有在方法被实现的情况下才会被调用。</p>
+</blockquote>
+<p>实现图解如下图。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/301129-dbc739cb752e60c3.png" alt></p>
+<p>从图中可以看出，我们通过swizzling特性，将selectorC的方法实现IMPc与selectorN的方法实现IMPn交换了，当我们调用selectorC，也就是给对象发送selectorC消息时，所查找到的对应的方法实现就是IMPn而不是IMPc了。</p>
+<h4 id="KVO实现"><a href="#KVO实现" class="headerlink" title="KVO实现"></a>KVO实现</h4><p><a href="https://www.jianshu.com/p/e59bb8f59302" target="_blank" rel="noopener">质量博客解读</a></p>
+<p>全称是Key-value observing，翻译成键值观察。提供了一种当其它对象属性被修改的时候能通知当前对象的机制。在MVC大行其道的Cocoa中，KVO机制很适合实现model和controller类之间的通讯。</p>
+<p>KVO的实现依赖于 Objective-C 强大的 Runtime，当观察某对象 A 时，KVO 机制动态创建一个对象A当前类的子类，并为这个新的子类重写了被观察属性 keyPath 的 setter 方法。setter 方法随后负责通知观察对象属性的改变状况。</p>
+<p><strong>Apple 使用了 isa-swizzling 来实现 KVO 。当观察对象A时，KVO机制动态创建一个新的名为：NSKVONotifying_A的新类，该类继承自对象A的本类，且 KVO 为 NSKVONotifying_A 重写观察属性的 setter 方法，setter 方法会负责在调用原 setter 方法之前和之后，通知所有观察对象属性值的更改情况</strong>。</p>
+<p>所以当我们从应用层面上看来，完全没有意识到有新的类出现，这是系统“隐瞒”了对 KVO 的底层实现过程，让我们误以为还是原来的类。但是此时如果我们创建一个新的名为“NSKVONotifying_A”的类，就会发现系统运行到注册 KVO 的那段代码时程序就崩溃，因为系统在注册监听的时候动态创建了名为 NSKVONotifying_A 的中间类，并指向这个中间类了。</p>
+<blockquote>
+<p>子类setter方法剖析</p>
+</blockquote>
+<p>KVO 的键值观察通知依赖于 NSObject 的两个方法:willChangeValueForKey:和 didChangeValueForKey: ，在存取数值的前后分别调用 2 个方法：<br>被观察属性发生改变之前，willChangeValueForKey:被调用，通知系统该 keyPath 的属性值即将变更；<br>当改变发生后， didChangeValueForKey: 被调用，通知系统该keyPath 的属性值已经变更；之后， observeValueForKey:ofObject:change:context:也会被调用。且重写观察属性的setter 方法这种继承方式的注入是在运行时而不是编译时实现的。<br>KVO 为子类的观察者属性重写调用存取方法的工作原理在代码中相当于：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- (void)setName:(NSString *)newName &#123; </span><br><span class="line">[self willChangeValueForKey:@&quot;name&quot;];    //KVO 在调用存取方法之前总调用 </span><br><span class="line">[super setValue:newName forKey:@&quot;name&quot;]; //调用父类的存取方法 </span><br><span class="line">[self didChangeValueForKey:@&quot;name&quot;];     //KVO 在调用存取方法之后总调用</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>示例如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">- (void)dealloc</span><br><span class="line">&#123;</span><br><span class="line">[self.person removeObserver:self forKeyPath:@&quot;name&quot;];</span><br><span class="line">&#125;</span><br><span class="line">- (void)viewDidLoad &#123;</span><br><span class="line">[super viewDidLoad];</span><br><span class="line">self.person = [Person new];</span><br><span class="line">[self.person addObserver:self forKeyPath:@&quot;name&quot; options:NSKeyValueObservingOptionNew context:@&quot;传个值？&quot;];</span><br><span class="line">&#125;</span><br><span class="line">#pragma mark KVO</span><br><span class="line">- (void)KVO</span><br><span class="line">&#123;</span><br><span class="line">self.person.name = @&quot;new name&quot;;</span><br><span class="line">&#125;</span><br><span class="line">- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary&lt;NSKeyValueChangeKey,id&gt; *)change context:(void *)context</span><br><span class="line">&#123;</span><br><span class="line">NSLog(@&quot;%@对象的%@属性改变了：%@,传值:%@&quot;, object, keyPath, change,context);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>输出如下</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;Person: 0x600000907280&gt;对象的name属性改变了：&#123;</span><br><span class="line">kind = 1;</span><br><span class="line">new = &quot;new name&quot;;</span><br><span class="line">&#125;,传值:传个值？</span><br></pre></td></tr></table></figure>
+<h4 id="消息转发-热更新-解决Bug-JSPatch"><a href="#消息转发-热更新-解决Bug-JSPatch" class="headerlink" title="消息转发(热更新)解决Bug(JSPatch)"></a>消息转发(热更新)解决Bug(JSPatch)</h4><blockquote>
+<p><a href="https://github.com/bang590/JSPatch/wiki/JSPatch-%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86%E8%AF%A6%E8%A7%A3" target="_blank" rel="noopener">JSPatch</a> 是一个 iOS 动态更新框架，只需在项目中引入极小的引擎，就可以使用 JavaScript 调用任何 Objective-C 原生接口，获得脚本语言的优势：为项目动态添加模块，或替换项目原生代码动态修复 bug。</p>
+</blockquote>
+<p>消息转发分为三级，我们可以在每级实现替换功能，实现消息转发，从而不会造成崩溃。JSPatch不仅能够实现消息转发，还可以实现方法添加、替换能一系列功能。</p>
+<h4 id="获得一个类的所有成员变量"><a href="#获得一个类的所有成员变量" class="headerlink" title="获得一个类的所有成员变量"></a>获得一个类的所有成员变量</h4><p>用runtime提供的函数遍历Model自身所有属性。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">unsigned int outCount = 0;</span><br><span class="line">Ivar *ivars = class_copyIvarList([Person class], &amp;outCount);</span><br><span class="line"></span><br><span class="line">// 遍历所有成员变量</span><br><span class="line">for (int i = 0; i &lt; outCount; i++) &#123;</span><br><span class="line">// 取出i位置对应的成员变量</span><br><span class="line">Ivar ivar = ivars[i];</span><br><span class="line">const char *name = ivar_getName(ivar);</span><br><span class="line">const char *type = ivar_getTypeEncoding(ivar);</span><br><span class="line">NSLog(@&quot;成员变量名：%s 成员变量类型：%s&quot;,name,type);</span><br><span class="line">&#125;</span><br><span class="line">// 注意释放内存！</span><br><span class="line">free(ivars);</span><br></pre></td></tr></table></figure>
+<h5 id="实现NSCoding的自动归档和自动解档"><a href="#实现NSCoding的自动归档和自动解档" class="headerlink" title="实现NSCoding的自动归档和自动解档"></a>实现NSCoding的自动归档和自动解档</h5><p>原理描述：用runtime提供的函数遍历Model自身所有属性，并对属性进行encode和decode操作。</p>
+<p>核心方法：在Model的基类中重写方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">- (id)initWithCoder:(NSCoder *)aDecoder &#123;</span><br><span class="line">if (self = [super init]) &#123;</span><br><span class="line">unsigned int outCount;</span><br><span class="line">Ivar * ivars = class_copyIvarList([self class], &amp;outCount);</span><br><span class="line">for (int i = 0; i &lt; outCount; i ++) &#123;</span><br><span class="line">Ivar ivar = ivars[i];</span><br><span class="line">NSString * key = [NSString stringWithUTF8String:ivar_getName(ivar)];</span><br><span class="line">[self setValue:[aDecoder decodeObjectForKey:key] forKey:key];</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line">return self;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)encodeWithCoder:(NSCoder *)aCoder &#123;</span><br><span class="line">unsigned int outCount;</span><br><span class="line">Ivar * ivars = class_copyIvarList([self class], &amp;outCount);</span><br><span class="line">for (int i = 0; i &lt; outCount; i ++) &#123;</span><br><span class="line">Ivar ivar = ivars[i];</span><br><span class="line">NSString * key = [NSString stringWithUTF8String:ivar_getName(ivar)];</span><br><span class="line">[aCoder encodeObject:[self valueForKey:key] forKey:key];</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="实现字典和模型的自动转换-MJExtension"><a href="#实现字典和模型的自动转换-MJExtension" class="headerlink" title="实现字典和模型的自动转换(MJExtension)"></a>实现字典和模型的自动转换(MJExtension)</h5><p>原理描述：用runtime提供的函数遍历Model自身所有属性，如果属性在json中有对应的值，则将其赋值。<br>核心方法：在NSObject的分类中添加方法<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">- (instancetype)initWithDict:(NSDictionary *)dict &#123;</span><br><span class="line"></span><br><span class="line">if (self = [self init]) &#123;</span><br><span class="line">//(1)获取类的属性及属性对应的类型</span><br><span class="line">NSMutableArray * keys = [NSMutableArray array];</span><br><span class="line">NSMutableArray * attributes = [NSMutableArray array];</span><br><span class="line">/*</span><br><span class="line">* 例子</span><br><span class="line">* name = value3 attribute = T@&quot;NSString&quot;,C,N,V_value3</span><br><span class="line">* name = value4 attribute = T^i,N,V_value4</span><br><span class="line">*/</span><br><span class="line">unsigned int outCount;</span><br><span class="line">objc_property_t * properties = class_copyPropertyList([self class], &amp;outCount);</span><br><span class="line">for (int i = 0; i &lt; outCount; i ++) &#123;</span><br><span class="line">objc_property_t property = properties[i];</span><br><span class="line">//通过property_getName函数获得属性的名字</span><br><span class="line">NSString * propertyName = [NSString stringWithCString:property_getName(property) encoding:NSUTF8StringEncoding];</span><br><span class="line">[keys addObject:propertyName];</span><br><span class="line">//通过property_getAttributes函数可以获得属性的名字和@encode编码</span><br><span class="line">NSString * propertyAttribute = [NSString stringWithCString:property_getAttributes(property) encoding:NSUTF8StringEncoding];</span><br><span class="line">[attributes addObject:propertyAttribute];</span><br><span class="line">&#125;</span><br><span class="line">//立即释放properties指向的内存</span><br><span class="line">free(properties);</span><br><span class="line"></span><br><span class="line">//(2)根据类型给属性赋值</span><br><span class="line">for (NSString * key in keys) &#123;</span><br><span class="line">if ([dict valueForKey:key] == nil) continue;</span><br><span class="line">[self setValue:[dict valueForKey:key] forKey:key];</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line">return self;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    iDog
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://bigporo.github.io/2019/04/23/Runtime应用篇/" title="Runtime应用篇">https://bigporo.github.io/2019/04/23/Runtime应用篇/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+   
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/iOS/" rel="tag"> <i class="fa fa-tag"></i> iOS</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/23/iOS各种设备信息获取总结/" rel="next" title="iOS各种设备信息获取总结">
+                <i class="fa fa-chevron-left"></i> iOS各种设备信息获取总结
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="https://ws2.sinaimg.cn/large/006tNc79ly1g2b8vkark5j304z050wel.jpg" alt="iDog">
+            
+              <p class="site-author-name" itemprop="name">iDog</p>
+              <p class="site-description motion-element" itemprop="description">一个记录工作和生活的小地方。</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/BigPoro" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.zhihu.com/people/liu-huan-34-85/activities" target="_blank" title="知乎">
+                      
+                        <i class="fa fa-fw fa-globe"></i>知乎</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#关联对象-Objective-C-Associated-Objects"><span class="nav-number">2.</span> <span class="nav-text">关联对象(Objective-C Associated Objects)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#方法魔法-Method-Swizzling"><span class="nav-number">3.</span> <span class="nav-text">方法魔法(Method Swizzling)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#方法添加"><span class="nav-number">3.1.</span> <span class="nav-text">方法添加</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#方法替换"><span class="nav-number">3.2.</span> <span class="nav-text">方法替换</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#KVO实现"><span class="nav-number">3.3.</span> <span class="nav-text">KVO实现</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#消息转发-热更新-解决Bug-JSPatch"><span class="nav-number">3.4.</span> <span class="nav-text">消息转发(热更新)解决Bug(JSPatch)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#获得一个类的所有成员变量"><span class="nav-number">3.5.</span> <span class="nav-text">获得一个类的所有成员变量</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#实现NSCoding的自动归档和自动解档"><span class="nav-number">3.5.1.</span> <span class="nav-text">实现NSCoding的自动归档和自动解档</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#实现字典和模型的自动转换-MJExtension"><span class="nav-number">3.5.2.</span> <span class="nav-text">实现字典和模型的自动转换(MJExtension)</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">iDog</span>
+
+  
+</div>
+
+
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+  本站访客数:<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+  <!-- <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div> -->
+
+
+
+  <span class="post-meta-divider"> 欢迎来到精神时光屋~~</span>
+
+
+
+  <!-- <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div> -->
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/hijiki.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>
