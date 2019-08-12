@@ -96,13 +96,13 @@
 <meta property="og:site_name" content="iDog的精神时光屋">
 <meta property="og:description" content="前言Runtime简直就是做大型框架的利器。它的应用场景非常多，下面就介绍一些常见的应用场景。  关联对象(Objective-C Associated Objects)给分类增加属性 方法魔法(Method Swizzling)方法添加和替换和KVO实现 消息转发(热更新)解决Bug(JSPatch) 实现NSCoding的自动归档和自动解档 实现字典和模型的自动转换(MJExtension)">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://ws4.sinaimg.cn/large/006tNc79ly1g2dtgtgmzkj30dw050gle.jpg">
-<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/301129-dbc739cb752e60c3.png">
-<meta property="og:updated_time" content="2019-04-24T08:58:26.133Z">
+<meta property="og:image" content="https://raw.githubusercontent.com/BigPoro/PictureBed/master/runtime.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/BigPoro/PictureBed/master/runtime_02.jpg">
+<meta property="og:updated_time" content="2019-08-12T14:42:46.895Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Runtime应用篇">
 <meta name="twitter:description" content="前言Runtime简直就是做大型框架的利器。它的应用场景非常多，下面就介绍一些常见的应用场景。  关联对象(Objective-C Associated Objects)给分类增加属性 方法魔法(Method Swizzling)方法添加和替换和KVO实现 消息转发(热更新)解决Bug(JSPatch) 实现NSCoding的自动归档和自动解档 实现字典和模型的自动转换(MJExtension)">
-<meta name="twitter:image" content="https://ws4.sinaimg.cn/large/006tNc79ly1g2dtgtgmzkj30dw050gle.jpg">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/BigPoro/PictureBed/master/runtime.jpg">
 
 
 
@@ -280,7 +280,7 @@
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="iDog">
       <meta itemprop="description" content>
-      <meta itemprop="image" content="https://ws2.sinaimg.cn/large/006tNc79ly1g2b8vkark5j304z050wel.jpg">
+      <meta itemprop="image" content="https://raw.githubusercontent.com/BigPoro/PictureBed/master/head_portrait.jpg">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -400,7 +400,7 @@
       
 
       
-        <p><img src="https://ws4.sinaimg.cn/large/006tNc79ly1g2dtgtgmzkj30dw050gle.jpg" alt></p>
+        <p><img src="https://raw.githubusercontent.com/BigPoro/PictureBed/master/runtime.jpg" alt></p>
 <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>Runtime简直就是做大型框架的利器。它的应用场景非常多，下面就介绍一些常见的应用场景。</p>
 <ul>
 <li>关联对象(Objective-C Associated Objects)给分类增加属性</li>
@@ -478,7 +478,7 @@
 <p> 在 Objective-C 的运行时中，每个类有两个方法都会自动调用。<strong>+load 是在一个类被初始装载时调用，+initialize 是在应用第一次调用该类的类方法或实例方法前调用的</strong>。两个方法都是可选的，并且只有在方法被实现的情况下才会被调用。</p>
 </blockquote>
 <p>实现图解如下图。</p>
-<p><img src="https://upload-images.jianshu.io/upload_images/301129-dbc739cb752e60c3.png" alt></p>
+<p><img src="https://raw.githubusercontent.com/BigPoro/PictureBed/master/runtime_02.jpg" alt></p>
 <p>从图中可以看出，我们通过swizzling特性，将selectorC的方法实现IMPc与selectorN的方法实现IMPn交换了，当我们调用selectorC，也就是给对象发送selectorC消息时，所查找到的对应的方法实现就是IMPn而不是IMPc了。</p>
 <h4 id="KVO实现"><a href="#KVO实现" class="headerlink" title="KVO实现"></a>KVO实现</h4><p><a href="https://www.jianshu.com/p/e59bb8f59302" target="_blank" rel="noopener">质量博客解读</a></p>
 <p>全称是Key-value observing，翻译成键值观察。提供了一种当其它对象属性被修改的时候能通知当前对象的机制。在MVC大行其道的Cocoa中，KVO机制很适合实现model和controller类之间的通讯。</p>
@@ -554,8 +554,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/04/23/cocoapods安装及使用/" rel="next" title="cocoapods安装及使用">
-                <i class="fa fa-chevron-left"></i> cocoapods安装及使用
+              <a href="/2019/04/23/《iOS开发进阶》读书总结/" rel="next" title="《iOS开发进阶》读书总结">
+                <i class="fa fa-chevron-left"></i> 《iOS开发进阶》读书总结
               </a>
             
           </div>
@@ -564,8 +564,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/04/23/Charles 从入门到精通/" rel="prev" title="Charles 从入门到精通">
-                Charles 从入门到精通 <i class="fa fa-chevron-right"></i>
+              <a href="/2019/04/23/cocoapods安装及使用/" rel="prev" title="cocoapods安装及使用">
+                cocoapods安装及使用 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -632,7 +632,7 @@
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
-              <img class="site-author-image" itemprop="image" src="https://ws2.sinaimg.cn/large/006tNc79ly1g2b8vkark5j304z050wel.jpg" alt="iDog">
+              <img class="site-author-image" itemprop="image" src="https://raw.githubusercontent.com/BigPoro/PictureBed/master/head_portrait.jpg" alt="iDog">
             
               <p class="site-author-name" itemprop="name">iDog</p>
               <p class="site-description motion-element" itemprop="description">一个记录工作和生活的小地方。</p>

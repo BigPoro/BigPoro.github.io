@@ -96,17 +96,17 @@
 <meta property="og:site_name" content="iDog的精神时光屋">
 <meta property="og:description" content="RunLoop 详解RunLoop的概念一般来讲，一个线程一次只能执行一个任务，在执行完一个任务之后线程就退出了。通过RunLoop,我们可以让一个线程可以随时处理任务而不退出。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://ws1.sinaimg.cn/large/006tNc79ly1g2dthpkisfj30dw050t8h.jpg">
-<meta property="og:image" content="https://ws4.sinaimg.cn/large/006tNc79ly1fz9dc962fwj31c209cq5j.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/BigPoro/PictureBed/master/runloop.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/BigPoro/PictureBed/master/runloop_02.jpg">
 <meta property="og:image" content="https://blog.ibireme.com/wp-content/uploads/2015/05/RunLoop_0.png">
 <meta property="og:image" content="https://blog.ibireme.com/wp-content/uploads/2015/05/RunLoop_1.png">
 <meta property="og:image" content="https://blog.ibireme.com/wp-content/uploads/2015/05/RunLoop_5.png">
 <meta property="og:image" content="https://blog.ibireme.com/wp-content/uploads/2015/05/RunLoop_network.png">
-<meta property="og:updated_time" content="2019-04-24T08:58:09.617Z">
+<meta property="og:updated_time" content="2019-08-12T14:44:43.999Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="RunLoop详解">
 <meta name="twitter:description" content="RunLoop 详解RunLoop的概念一般来讲，一个线程一次只能执行一个任务，在执行完一个任务之后线程就退出了。通过RunLoop,我们可以让一个线程可以随时处理任务而不退出。">
-<meta name="twitter:image" content="https://ws1.sinaimg.cn/large/006tNc79ly1g2dthpkisfj30dw050t8h.jpg">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/BigPoro/PictureBed/master/runloop.jpg">
 
 
 
@@ -284,7 +284,7 @@
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="iDog">
       <meta itemprop="description" content>
-      <meta itemprop="image" content="https://ws2.sinaimg.cn/large/006tNc79ly1g2b8vkark5j304z050wel.jpg">
+      <meta itemprop="image" content="https://raw.githubusercontent.com/BigPoro/PictureBed/master/head_portrait.jpg">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -404,7 +404,7 @@
       
 
       
-        <p><img src="https://ws1.sinaimg.cn/large/006tNc79ly1g2dthpkisfj30dw050t8h.jpg" alt></p>
+        <p><img src="https://raw.githubusercontent.com/BigPoro/PictureBed/master/runloop.jpg" alt></p>
 <h1 id="RunLoop-详解"><a href="#RunLoop-详解" class="headerlink" title="RunLoop 详解"></a>RunLoop 详解</h1><h3 id="RunLoop的概念"><a href="#RunLoop的概念" class="headerlink" title="RunLoop的概念"></a>RunLoop的概念</h3><p>一般来讲，一个线程一次只能执行一个任务，在执行完一个任务之后线程就退出了。通过RunLoop,我们可以让一个线程可以随时处理任务而不退出。</p>
 <a id="more"></a>
 <p>通常的代码逻辑是这样的：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">function loop()</span><br><span class="line">&#123;</span><br><span class="line">do &#123;</span><br><span class="line">var message = get_next_message();</span><br><span class="line">process_message(message);</span><br><span class="line">&#125; while (message != quit);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
@@ -423,7 +423,7 @@
 <p>CFRunLoopSourceRef</p>
 <p>CFRunLoopTimerRef</p>
 <p>CFRunLoopObserverRef</p>
-<p><img src="https://ws4.sinaimg.cn/large/006tNc79ly1fz9dc962fwj31c209cq5j.jpg" alt="图片.png"></p>
+<p><img src="https://raw.githubusercontent.com/BigPoro/PictureBed/master/runloop_02.jpg" alt></p>
 <p>其中 CFRunLoopModeRef 类并没有对外暴露，只是通过 CFRunLoopRef 的接口进行了封装。</p>
 <p>他们的关系如下:<br><img src="https://blog.ibireme.com/wp-content/uploads/2015/05/RunLoop_0.png" alt></p>
 <p>一个 RunLoop 包含若干个 Mode，每个 Mode 又包含若干个 Source/Timer/Observer。每次调用 RunLoop 的主函数时，<strong>只能指定其中一个 Mode，这个Mode被称作 CurrentMode</strong>。如果需要切换 Mode，只能退出 Loop，再重新指定一个 Mode 进入。这样做主要是为了分隔开不同组的 Source/Timer/Observer，让其互不影响。</p>
@@ -579,8 +579,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/04/23/《iOS开发进阶》读书总结/" rel="prev" title="《iOS开发进阶》读书总结">
-                《iOS开发进阶》读书总结 <i class="fa fa-chevron-right"></i>
+              <a href="/2019/04/23/iOS各种设备信息获取总结/" rel="prev" title="iOS各种设备信息获取总结">
+                iOS各种设备信息获取总结 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -647,7 +647,7 @@
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
-              <img class="site-author-image" itemprop="image" src="https://ws2.sinaimg.cn/large/006tNc79ly1g2b8vkark5j304z050wel.jpg" alt="iDog">
+              <img class="site-author-image" itemprop="image" src="https://raw.githubusercontent.com/BigPoro/PictureBed/master/head_portrait.jpg" alt="iDog">
             
               <p class="site-author-name" itemprop="name">iDog</p>
               <p class="site-description motion-element" itemprop="description">一个记录工作和生活的小地方。</p>
