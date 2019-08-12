@@ -107,10 +107,10 @@
 <meta property="og:image" content="https://raw.githubusercontent.com/BigPoro/PictureBed/master/Charles_09.jpg">
 <meta property="og:image" content="https://raw.githubusercontent.com/BigPoro/PictureBed/master/Charles_10.jpg">
 <meta property="og:image" content="https://raw.githubusercontent.com/BigPoro/PictureBed/master/Charles_11.jpg">
-<meta property="og:image" content="https://raw.githubusercontent.com/BigPoro/PictureBed/master/Charles_12.jpg">
-<meta property="og:image" content="https://raw.githubusercontent.com/BigPoro/PictureBed/master/Charles_13.jpg">
-<meta property="og:image" content="https://raw.githubusercontent.com/BigPoro/PictureBed/master/Charles_14.jpg">
-<meta property="og:image" content="https://raw.githubusercontent.com/BigPoro/PictureBed/master/Charles_15.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/BigPoro/PictureBed/master/Charles_12.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/BigPoro/PictureBed/master/Charles_13.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/BigPoro/PictureBed/master/Charles_14.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/BigPoro/PictureBed/master/Charles_15.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/BigPoro/PictureBed/master/Charles_16.jpg">
 <meta property="og:image" content="https://raw.githubusercontent.com/BigPoro/PictureBed/master/Charles_17.jpg">
 <meta property="og:image" content="https://raw.githubusercontent.com/BigPoro/PictureBed/master/Charles_18.jpg">
@@ -118,7 +118,7 @@
 <meta property="og:image" content="https://raw.githubusercontent.com/BigPoro/PictureBed/master/Charles_20.jpg">
 <meta property="og:image" content="https://raw.githubusercontent.com/BigPoro/PictureBed/master/Charles_21.jpg">
 <meta property="og:image" content="https://raw.githubusercontent.com/BigPoro/PictureBed/master/Charles_22.jpg">
-<meta property="og:updated_time" content="2019-08-12T14:36:16.118Z">
+<meta property="og:updated_time" content="2019-08-12T14:57:32.512Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Charles 从入门到精通">
 <meta name="twitter:description" content="巧神原文  本文是在巧神原文的基础上，按照流程走一遍并记录。  简介Charles 是在 Mac 下常用的网络封包截取工具，在做移动开发时，我们为了调试与服务器端的网络通讯协议，常常需要截取网络封包来分析。 Charles 通过将自己设置成系统的网络访问代理服务器，使得所有的网络访问请求都通过它来完成，从而实现了网络封包的截取和分析。 除了在做移动开发中调试端口外，Charles 也可以用于分析第">
@@ -487,10 +487,10 @@
 <ol>
 <li><p>先点proxy中的macOS Proxy ，如果进行了网络请求，但是Charles没有出现数据的话，把翻墙软件关了。</p>
 </li>
-<li><p>然后去钥匙串找到Charles的CA证书，双击修改如下。<br><img src="https://raw.githubusercontent.com/BigPoro/PictureBed/master/Charles_12.jpg" alt></p>
+<li><p>然后去钥匙串找到Charles的CA证书，双击修改如下。<br><img src="https://raw.githubusercontent.com/BigPoro/PictureBed/master/Charles_12.png" alt></p>
 </li>
-<li>关闭窗口就可以看到证书变成:<br><img src="https://raw.githubusercontent.com/BigPoro/PictureBed/master/Charles_13.jpg" alt></li>
-<li>接下来点击proxy中的SSL Proxying Settings，出现如下图所示，然后点add 在Host里填 * 号 ，在Port里填443，然后点ok：<br><img src="https://raw.githubusercontent.com/BigPoro/PictureBed/master/Charles_14.jpg" alt><br><img src="https://raw.githubusercontent.com/BigPoro/PictureBed/master/Charles_15.jpg" alt><h3 id="模拟慢速网络"><a href="#模拟慢速网络" class="headerlink" title="模拟慢速网络"></a>模拟慢速网络</h3>在做移动开发的时候，我们常常需要模拟慢速网络或者高延迟的网络，以测试在移动网络下，应用的表现是否正常。Charles 对此需求提供了很好的支持。</li>
+<li>关闭窗口就可以看到证书变成:<br><img src="https://raw.githubusercontent.com/BigPoro/PictureBed/master/Charles_13.png" alt></li>
+<li>接下来点击proxy中的SSL Proxying Settings，出现如下图所示，然后点add 在Host里填 * 号 ，在Port里填443，然后点ok：<br><img src="https://raw.githubusercontent.com/BigPoro/PictureBed/master/Charles_14.png" alt><br><img src="https://raw.githubusercontent.com/BigPoro/PictureBed/master/Charles_15.png" alt><h3 id="模拟慢速网络"><a href="#模拟慢速网络" class="headerlink" title="模拟慢速网络"></a>模拟慢速网络</h3>在做移动开发的时候，我们常常需要模拟慢速网络或者高延迟的网络，以测试在移动网络下，应用的表现是否正常。Charles 对此需求提供了很好的支持。</li>
 </ol>
 <p>在 Charles 的菜单上，选择 “Proxy”-&gt;”Throttle Setting” 项，在之后弹出的对话框中，我们可以勾选上 “Enable Throttling”，并且可以设置 Throttle Preset 的类型。如下图所示：<br><img src="https://raw.githubusercontent.com/BigPoro/PictureBed/master/Charles_16.jpg" alt></p>
 <p>如果我们只想模拟指定网站的慢速网络，可以再勾选上图中的 “Only for selected hosts” 项，然后在对话框的下半部分设置中增加指定的 hosts 项即可。</p>
@@ -583,8 +583,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/04/23/cocoapods安装及使用/" rel="next" title="cocoapods安装及使用">
-                <i class="fa fa-chevron-left"></i> cocoapods安装及使用
+              <a href="/2019/04/23/Runtime应用篇/" rel="next" title="Runtime应用篇">
+                <i class="fa fa-chevron-left"></i> Runtime应用篇
               </a>
             
           </div>
@@ -593,8 +593,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/04/23/文档生成工具-appledoc/" rel="prev" title="文档生成工具-appledoc">
-                文档生成工具-appledoc <i class="fa fa-chevron-right"></i>
+              <a href="/2019/04/23/获取ipa包以及图片资源/" rel="prev" title="获取ipa包以及图片资源">
+                获取ipa包以及图片资源 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>

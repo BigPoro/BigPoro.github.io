@@ -96,14 +96,14 @@
 <meta property="og:site_name" content="iDog的精神时光屋">
 <meta property="og:description" content="Runtime介绍 Objective-C 扩展了 C 语言，并加入了面向对象特性和 Smalltalk 式的消息传递机制。而这个扩展的核心是一个用 C 和 编译语言 写的 Runtime 库。它是 Objective-C 面向对象和动态机制的基石。   Objective-C 是一个动态语言，这意味着它不仅需要一个编译器，也需要一个运行时系统来动态得创建类和对象、进行消息传递和转发。理解 Ob">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://ws4.sinaimg.cn/large/006tNc79ly1g2dtgtgmzkj30dw050gle.jpg">
-<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/301129-cc9c0a7ffb147fed.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/BigPoro/PictureBed/master/runtime.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/BigPoro/PictureBed/master/runtime_02.jpg">
 <meta property="og:image" content="https://upload-images.jianshu.io/upload_images/301129-a1159ef51f453da8.png">
-<meta property="og:updated_time" content="2019-04-24T08:58:15.610Z">
+<meta property="og:updated_time" content="2019-08-12T15:03:11.641Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Runtime原理篇">
 <meta name="twitter:description" content="Runtime介绍 Objective-C 扩展了 C 语言，并加入了面向对象特性和 Smalltalk 式的消息传递机制。而这个扩展的核心是一个用 C 和 编译语言 写的 Runtime 库。它是 Objective-C 面向对象和动态机制的基石。   Objective-C 是一个动态语言，这意味着它不仅需要一个编译器，也需要一个运行时系统来动态得创建类和对象、进行消息传递和转发。理解 Ob">
-<meta name="twitter:image" content="https://ws4.sinaimg.cn/large/006tNc79ly1g2dtgtgmzkj30dw050gle.jpg">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/BigPoro/PictureBed/master/runtime.jpg">
 
 
 
@@ -401,7 +401,7 @@
       
 
       
-        <p><img src="https://ws4.sinaimg.cn/large/006tNc79ly1g2dtgtgmzkj30dw050gle.jpg" alt></p>
+        <p><img src="https://raw.githubusercontent.com/BigPoro/PictureBed/master/runtime.jpg" alt></p>
 <h3 id="Runtime介绍"><a href="#Runtime介绍" class="headerlink" title="Runtime介绍"></a>Runtime介绍</h3><blockquote>
 <p>Objective-C 扩展了 C 语言，并加入了面向对象特性和 Smalltalk 式的消息传递机制。而这个扩展的核心是一个用 C 和 编译语言 写的 Runtime 库。它是 Objective-C 面向对象和动态机制的基石。</p>
 </blockquote>
@@ -469,7 +469,7 @@
 <p>动态创建对象</p>
 </blockquote>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// 创建类实例</span><br><span class="line">id class_createInstance ( Class cls, size_t extraBytes ); //会在heap里给类分配内存。这个方法和+alloc方法类似。</span><br><span class="line"></span><br><span class="line">// 在指定位置创建类实例</span><br><span class="line">id objc_constructInstance ( Class cls, void *bytes ); </span><br><span class="line"></span><br><span class="line">// 销毁类实例</span><br><span class="line">void * objc_destructInstance ( id obj ); //不会释放移除任何相关引用</span><br></pre></td></tr></table></figure>
-<h4 id="元类-Meta-Class"><a href="#元类-Meta-Class" class="headerlink" title="元类(Meta Class)"></a>元类(Meta Class)</h4><p>类对象中的元数据存储的都是如何创建一个实例的相关信息，那么类对象和类方法应该从哪里创建呢？<br>就是从isa指针指向的结构体创建，<strong>类对象的isa指针指向的我们称之为元类(metaclass)，<br>元类中保存了创建类对象以及类方法所需的所有信息</strong>，因此整个结构应该如下图所示:<br><img src="https://upload-images.jianshu.io/upload_images/301129-cc9c0a7ffb147fed.png" alt></p>
+<h4 id="元类-Meta-Class"><a href="#元类-Meta-Class" class="headerlink" title="元类(Meta Class)"></a>元类(Meta Class)</h4><p>类对象中的元数据存储的都是如何创建一个实例的相关信息，那么类对象和类方法应该从哪里创建呢？<br>就是从isa指针指向的结构体创建，<strong>类对象的isa指针指向的我们称之为元类(metaclass)，<br>元类中保存了创建类对象以及类方法所需的所有信息</strong>，因此整个结构应该如下图所示:<br><img src="https://raw.githubusercontent.com/BigPoro/PictureBed/master/runtime_02.jpg" alt></p>
 <p>通过上图我们可以看出整个体系构成了一个自闭环，<strong>struct objc_object结构体实例它的isa指针指向类对象，<br>类对象的isa指针指向了元类，super_class指针指向了父类的类对象，<br>而元类的super_class指针指向了父类的元类，那元类的isa指针又指向了自己。</strong><br><strong>元类(Meta Class)是一个类对象的类</strong>。</p>
 <blockquote>
 <p>操作函数</p>
