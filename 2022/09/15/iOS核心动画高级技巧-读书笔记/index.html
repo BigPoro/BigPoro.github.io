@@ -88,17 +88,21 @@
 
 
 
-<meta name="description" content="一个记录工作和生活的小地方。">
+<meta name="description" content="图层树UIView和CALayer的关系CALayer类在概念上和UIView类似，同样也是一些被层级关系树管理的矩形块，同样也可以包含一些内容（像图片，文本或者背景色），管理子图层的位置。 它们有一些方法和属性用来做动画和变换。和UIView最大的不同是CALayer不处理用户的交互。但是它提供了一些方法来判断是否一个触点在图层的范围之内。 每一个UIView都有一个CALayer实例的图层属性">
 <meta name="keywords" content="iOS开发 前端 JS">
-<meta property="og:type" content="website">
-<meta property="og:title" content="iDog的精神时光屋">
-<meta property="og:url" content="https://bigporo.github.io/index.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS核心动画高级技巧-读书笔记">
+<meta property="og:url" content="https://bigporo.github.io/2022/09/15/iOS核心动画高级技巧-读书笔记/index.html">
 <meta property="og:site_name" content="iDog的精神时光屋">
-<meta property="og:description" content="一个记录工作和生活的小地方。">
+<meta property="og:description" content="图层树UIView和CALayer的关系CALayer类在概念上和UIView类似，同样也是一些被层级关系树管理的矩形块，同样也可以包含一些内容（像图片，文本或者背景色），管理子图层的位置。 它们有一些方法和属性用来做动画和变换。和UIView最大的不同是CALayer不处理用户的交互。但是它提供了一些方法来判断是否一个触点在图层的范围之内。 每一个UIView都有一个CALayer实例的图层属性">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://zsisme.gitbooks.io/ios-/content/chapter7/7.4.jpeg">
+<meta property="og:image" content="https://zsisme.gitbooks.io/ios-/content/chapter10/10.2.jpeg">
+<meta property="og:updated_time" content="2022-11-06T01:25:58.361Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="iDog的精神时光屋">
-<meta name="twitter:description" content="一个记录工作和生活的小地方。">
+<meta name="twitter:title" content="iOS核心动画高级技巧-读书笔记">
+<meta name="twitter:description" content="图层树UIView和CALayer的关系CALayer类在概念上和UIView类似，同样也是一些被层级关系树管理的矩形块，同样也可以包含一些内容（像图片，文本或者背景色），管理子图层的位置。 它们有一些方法和属性用来做动画和变换。和UIView最大的不同是CALayer不处理用户的交互。但是它提供了一些方法来判断是否一个触点在图层的范围之内。 每一个UIView都有一个CALayer实例的图层属性">
+<meta name="twitter:image" content="https://zsisme.gitbooks.io/ios-/content/chapter7/7.4.jpeg">
 
 
 
@@ -128,13 +132,13 @@
 
 
 
-  <link rel="canonical" href="https://bigporo.github.io/">
+  <link rel="canonical" href="https://bigporo.github.io/2022/09/15/iOS核心动画高级技巧-读书笔记/">
 
 
 
 
 
-  <title>iDog的精神时光屋</title>
+  <title>iOS核心动画高级技巧-读书笔记 | iDog的精神时光屋</title>
   
 
 
@@ -153,8 +157,7 @@
     
   
 
-  <div class="container sidebar-position-left 
-  page-home">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
     <a href="https://github.com/BigPoro" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewbox="0 0 250 250" style="fill:#fff; color:#151513; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -257,197 +260,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://bigporo.github.io/2022/11/06/iOS常用设计模式/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="iDog">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="https://raw.githubusercontent.com/BigPoro/PictureBed/master/head_portrait.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="iDog的精神时光屋">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2022/11/06/iOS常用设计模式/" itemprop="url">iOS常用设计模式</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-11-06T09:26:25+08:00">
-                2022-11-06
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/读书/" itemprop="url" rel="index">
-                    <span itemprop="name">读书</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  8.9k
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  35
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p><img src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d51f50b9513d4860956a4d9ad4b9828e~tplv-k3u1fbpfcp-zoom-crop-mark:3024:3024:3024:1702.awebp" alt="image"></p>
-<h2 id="基本原则"><a href="#基本原则" class="headerlink" title="基本原则"></a>基本原则</h2><ul>
-<li>开闭原则（Open Close Principle）</li>
-</ul>
-<blockquote>
-<p>对扩展打开，对修改关闭。在程序需要进行拓展的时候，不能去修改原有的代码，实现一个热插拔的效果。简言之，是为了使程序的扩展性好，易于维护和升级。</p>
-</blockquote>
-<ul>
-<li>里氏替换原则（Liskov Substitution Principle）</li>
-</ul>
-<blockquote>
-<p>父子可以相互调用，父类必须提供足够多的抽象方法供子类重载使用。 任何基类可以出现的地方，子类一定可以出现。LSP 是继承复用的基石，只有当派生类可以替换掉基类，且软件单位的功能不受到影响时，基类才能真正被复用，而派生类也能够在基类的基础上增加新的行为。里氏代换原则是对开闭原则的补充。实现开闭原则的关键步骤就是抽象化，而基类与子类的继承关系就是抽象化的具体实现，所以里氏代换原则是对实现抽象化的具体步骤的规范。<br>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2022/11/06/iOS常用设计模式/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </p></blockquote></div>
-    
-    
-    
-
-    
-
-    
-
-    
-   
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
 
   
 
@@ -477,9 +292,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2022/09/15/iOS核心动画高级技巧-读书笔记/" itemprop="url">iOS核心动画高级技巧-读书笔记</a></h1>
+          <h1 class="post-title" itemprop="name headline">iOS核心动画高级技巧-读书笔记</h1>
         
 
         <div class="post-meta">
@@ -510,6 +323,11 @@
           
           
 
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
           
 
           
@@ -560,9 +378,7 @@
       
 
       
-        
-          
-            <h1 id="图层树"><a href="#图层树" class="headerlink" title="图层树"></a>图层树</h1><h2 id="UIView和CALayer的关系"><a href="#UIView和CALayer的关系" class="headerlink" title="UIView和CALayer的关系"></a>UIView和CALayer的关系</h2><p><code>CALayer</code>类在概念上和<code>UIView</code>类似，同样也是一些被层级关系树管理的矩形块，同样也可以包含一些内容（像图片，文本或者背景色），管理子图层的位置。</p>
+        <h1 id="图层树"><a href="#图层树" class="headerlink" title="图层树"></a>图层树</h1><h2 id="UIView和CALayer的关系"><a href="#UIView和CALayer的关系" class="headerlink" title="UIView和CALayer的关系"></a>UIView和CALayer的关系</h2><p><code>CALayer</code>类在概念上和<code>UIView</code>类似，同样也是一些被层级关系树管理的矩形块，同样也可以包含一些内容（像图片，文本或者背景色），管理子图层的位置。</p>
 <p>它们有一些方法和属性用来做动画和变换。和<code>UIView</code>最大的不同是<code>CALayer</code>不处理用户的交互。但是它提供了一些方法来判断是否一个触点在图层的范围之内。</p>
 <p>每一个<code>UIView</code>都有一个<code>CALayer</code>实例的图层属性，也就是所谓的<code>backing layer</code>，视图的职责就是创建并管理这个图层。</p>
 <p>这些背后关联的图层才是真正用来在屏幕上显示和做动画，<code>UIView</code>仅仅是对它的一个封装，提供了一些iOS类似于处理触摸的具体功能，以及<code>Core Animation</code>底层方法的高级接口。</p>
@@ -1096,8 +912,6 @@ colorLayer.add(animation, forKey: nil)
 <h2 id="对象回收"><a href="#对象回收" class="headerlink" title="对象回收"></a>对象回收</h2><p>对象回收的基础原则就是你需要创建一个相似对象池。当一个对象的指定实例（本例子中指的是图层）结束了使命，你把它添加到对象池中。每次当你需要一个实例时，你就从池中取出一个。当且仅当池中为空时再创建一个新的。</p>
 <p>这样做的好处在于避免了不断创建和释放对象（相当消耗资源，因为涉及到内存的分配和销毁）而且也不必给相似实例重复赋值。</p>
 
-          
-        
       
     </div>
     
@@ -1109,1447 +923,69 @@ colorLayer.add(animation, forKey: nil)
     
 
     
-   
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://bigporo.github.io/2020/08/27/关于App-Extension/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="iDog">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="https://raw.githubusercontent.com/BigPoro/PictureBed/master/head_portrait.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="iDog的精神时光屋">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/08/27/关于App-Extension/" itemprop="url">关于App Extension</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-08-27T09:48:28+08:00">
-                2020-08-27
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  933
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  3
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p><img src="https://visualhunt.com/photos/1/street-vehicle-motor-scooter-vespa-1.jpg?s=s" alt></p>
-<h2 id="App-Extension"><a href="#App-Extension" class="headerlink" title="App Extension"></a>App Extension</h2><p>　App Extension可以让你扩展你APP的自定义功能和内容，使用户可以在与其他应用或者系统进行互动的时候去使用它。</p>
-<ul>
-<li>extension并不是一个独立的app，它有一个包含在app bundle中的独立bundle；</li>
-<li>extension不能单独存在，必须有一个包含它的containing app；</li>
-<li>不同的extension激活方式不同；</li>
-<li>常见的种类包括Today Widget、Share Extension、Action Extension、Document Provider、Custom Keyboard
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2020/08/27/关于App-Extension/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </li></ul></div>
-    
-    
-    
-
-    
-
-    
-
-    
-   
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://bigporo.github.io/2020/08/23/组件化方案的对比和分析/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="iDog">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="https://raw.githubusercontent.com/BigPoro/PictureBed/master/head_portrait.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="iDog的精神时光屋">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/08/23/组件化方案的对比和分析/" itemprop="url">组件化方案的对比和分析</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-08-23T22:37:08+08:00">
-                2020-08-23
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/iOS/" itemprop="url" rel="index">
-                    <span itemprop="name">iOS</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  684
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  3
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p><img src="https://visualhunt.com/photos/1/underwater-blue-ocean-sea.jpg?s=s" alt></p>
-<p>本文将介绍下主流的三种组件化方案，并对比分析各自的优缺点。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2020/08/23/组件化方案的对比和分析/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-   
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://bigporo.github.io/2019/08/20/Cocoapods私有库搭建/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="iDog">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="https://raw.githubusercontent.com/BigPoro/PictureBed/master/head_portrait.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="iDog的精神时光屋">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/08/20/Cocoapods私有库搭建/" itemprop="url">Cocoapods私有库搭建</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-20T22:02:19+08:00">
-                2019-08-20
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/工具集/" itemprop="url" rel="index">
-                    <span itemprop="name">工具集</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  3.9k
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  17
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSRYwBhU67p7i0G49VmSp-F2gyOlaxm8ocKmSN8mWse6p7605W4pQ" alt></p>
-<p><code>Cocoapods</code>是非常好用的一个iOS依赖管理工具，使用它可以方便的管理和更新项目中所使用到的第三方库，以及将自己的项目中的公共组件交由它去管理。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/08/20/Cocoapods私有库搭建/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-   
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://bigporo.github.io/2019/05/17/从App启动开始/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="iDog">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="https://raw.githubusercontent.com/BigPoro/PictureBed/master/head_portrait.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="iDog的精神时光屋">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/05/17/从App启动开始/" itemprop="url">从App启动开始</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-05-17T11:34:23+08:00">
-                2019-05-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/iOS/" itemprop="url" rel="index">
-                    <span itemprop="name">iOS</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  965
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  3
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p><img src="https://visualhunt.com/photos/1/sunrise-in-a-forest-1.jpg?s=s" alt></p>
-<h2 id="App启动时都干了哪些事？"><a href="#App启动时都干了哪些事？" class="headerlink" title="App启动时都干了哪些事？"></a>App启动时都干了哪些事？</h2><p>一般情况下，App的启动分为冷启动和热启动。</p>
-<h3 id="冷启动"><a href="#冷启动" class="headerlink" title="冷启动"></a>冷启动</h3><p>App点击启动前，它的进程不在系统里，需要系统新创建一个进程给它启动的情况，这是一次完成的启动过程。</p>
-<h3 id="热启动"><a href="#热启动" class="headerlink" title="热启动"></a>热启动</h3><p>APP在冷启动后被用户退到后台，在App的进程还在系统里的情况下，用户重新启动进入App的过程，这个过程所做的事情非常少。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/05/17/从App启动开始/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-   
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://bigporo.github.io/2019/05/17/怎么应对各种富文本表现需求？/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="iDog">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="https://raw.githubusercontent.com/BigPoro/PictureBed/master/head_portrait.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="iDog的精神时光屋">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/05/17/怎么应对各种富文本表现需求？/" itemprop="url">怎么应对各种富文本表现需求？</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-05-17T10:23:12+08:00">
-                2019-05-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/iOS/" itemprop="url" rel="index">
-                    <span itemprop="name">iOS</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  460
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  1
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p><img src="https://visualhunt.com/photos/1/nature-sunny-man-person-1.jpg?s=s" alt></p>
-<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在iOS的日常开发中，会经常使用到富文本。</p>
-<p>简单来说，富文本就是一段有属性的字符串，可以包含不同字体、不同字号、不同背景、不同颜色、不同字间距的文字，还可以设置段落、图文混排等属性。</p>
-<p>正常在使用富文本的时候，有如下方式：HTML、TextKit、YYKit。一般在长列表的场景下，我们使用性能更高、内存占用更少的TextKit、YYKit。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/05/17/怎么应对各种富文本表现需求？/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-   
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://bigporo.github.io/2019/04/25/《剑指Offer》读书总结/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="iDog">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="https://raw.githubusercontent.com/BigPoro/PictureBed/master/head_portrait.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="iDog的精神时光屋">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/04/25/《剑指Offer》读书总结/" itemprop="url">《剑指Offer》读书总结</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-25T10:42:13+08:00">
-                2019-04-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/读书/" itemprop="url" rel="index">
-                    <span itemprop="name">读书</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  1.5k
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  4
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p><img src="https://img.ssyer.com/picture/full/BJ92xn43z.jpg" alt></p>
-<h2 id="面试的三个环节"><a href="#面试的三个环节" class="headerlink" title="面试的三个环节"></a>面试的三个环节</h2><h3 id="行为面试"><a href="#行为面试" class="headerlink" title="行为面试"></a>行为面试</h3><p> 主要是暖场，需要快速调节以进入面试状态。</p>
-<h4 id="项目经验"><a href="#项目经验" class="headerlink" title="项目经验"></a>项目经验</h4><ul>
-<li>项目背景：项目的规模，开发的软件的功能，目标用户等。</li>
-<li>任务：详细介绍自己的的任务，注意区分“参与”和“负责”。</li>
-<li>具体工作：介绍完成任务所做的工作，可以具体到结构、框架、技术细节等。</li>
-<li>贡献：详细介绍在任务中的贡献，最好可以数字化。</li>
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    iDog
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://bigporo.github.io/2022/09/15/iOS核心动画高级技巧-读书笔记/" title="iOS核心动画高级技巧-读书笔记">https://bigporo.github.io/2022/09/15/iOS核心动画高级技巧-读书笔记/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
 </ul>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/04/25/《剑指Offer》读书总结/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
+
+      </div>
+    
+   
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/08/27/关于App-Extension/" rel="next" title="关于App Extension">
+                <i class="fa fa-chevron-left"></i> 关于App Extension
+              </a>
+            
           </div>
-          <!--/noindex-->
-        
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2022/11/06/iOS常用设计模式/" rel="prev" title="iOS常用设计模式">
+                iOS常用设计模式 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
       
     </div>
-    
-    
-    
-
-    
-
-    
-
-    
-   
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
   </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://bigporo.github.io/2019/04/23/ImageOptim - 图片压缩/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="iDog">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="https://raw.githubusercontent.com/BigPoro/PictureBed/master/head_portrait.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="iDog的精神时光屋">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/04/23/ImageOptim - 图片压缩/" itemprop="url">ImageOptim - 图片压缩</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-23T17:17:43+08:00">
-                2019-04-23
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/工具集/" itemprop="url" rel="index">
-                    <span itemprop="name">工具集</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  114
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  1
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p><a href="https://link.jianshu.com/?t=https://imageoptim.com/ImageOptim.tbz2" target="_blank" rel="noopener">下载地址</a></p>
-<p>ImageOptim是一款基于Mac的图像“瘦身”软件，内置有6种压缩算法，通过删除图片部分无用的EXIF等信息来减小PNG、JPEG和GIF图片的大小。<br>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/04/23/ImageOptim - 图片压缩/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </p></div>
-    
-    
-    
-
-    
-
-    
-
-    
-   
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://bigporo.github.io/2019/04/23/Injection：iOS热重载-所见即所得/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="iDog">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="https://raw.githubusercontent.com/BigPoro/PictureBed/master/head_portrait.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="iDog的精神时光屋">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/04/23/Injection：iOS热重载-所见即所得/" itemprop="url">Injection：iOS热重载-所见即所得</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-23T17:17:43+08:00">
-                2019-04-23
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/工具集/" itemprop="url" rel="index">
-                    <span itemprop="name">工具集</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  8
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  1
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><a href="https://www.jianshu.com/p/17fddfaabb1f" target="_blank" rel="noopener">参考博客</a></p>
-<p><a href="http://www.cocoachina.com/ios/20180613/23780.html" target="_blank" rel="noopener">参考博客</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-   
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-  </section>
-
-  
-  <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
-  </nav>
-
 
 
           </div>
@@ -2557,6 +993,10 @@ colorLayer.add(animation, forKey: nil)
 
 
           
+
+  
+
+
 
         </div>
         
@@ -2577,8 +1017,17 @@ colorLayer.add(animation, forKey: nil)
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -2656,6 +1105,22 @@ colorLayer.add(animation, forKey: nil)
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#图层树"><span class="nav-number">1.</span> <span class="nav-text">图层树</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#UIView和CALayer的关系"><span class="nav-number">1.1.</span> <span class="nav-text">UIView和CALayer的关系</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CALayer的能力"><span class="nav-number">1.2.</span> <span class="nav-text">CALayer的能力</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#寄宿图"><span class="nav-number">2.</span> <span class="nav-text">寄宿图</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#contents"><span class="nav-number">2.1.</span> <span class="nav-text">contents</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Custom-Drawing"><span class="nav-number">2.2.</span> <span class="nav-text">Custom Drawing</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#图层几何学"><span class="nav-number">3.</span> <span class="nav-text">图层几何学</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#布局"><span class="nav-number">3.1.</span> <span class="nav-text">布局</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#锚点"><span class="nav-number">3.2.</span> <span class="nav-text">锚点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#坐标系"><span class="nav-number">3.3.</span> <span class="nav-text">坐标系</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#翻转的几何结构"><span class="nav-number">3.4.</span> <span class="nav-text">翻转的几何结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Z坐标轴"><span class="nav-number">3.5.</span> <span class="nav-text">Z坐标轴</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Hit-Testing"><span class="nav-number">3.6.</span> <span class="nav-text">Hit Testing</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#自动布局"><span class="nav-number">3.7.</span> <span class="nav-text">自动布局</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#视觉效果"><span class="nav-number">4.</span> <span class="nav-text">视觉效果</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#阴影"><span class="nav-number">4.1.</span> <span class="nav-text">阴影</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#变换"><span class="nav-number">4.2.</span> <span class="nav-text">变换</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#仿射变换"><span class="nav-number">4.2.1.</span> <span class="nav-text">仿射变换</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3D变换"><span class="nav-number">4.2.2.</span> <span class="nav-text">3D变换</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#透视投影-lt-重点-gt"><span class="nav-number">4.2.3.</span> <span class="nav-text">透视投影&lt;重点&gt;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#灭点-lt-重点-gt"><span class="nav-number">4.2.4.</span> <span class="nav-text">灭点&lt;重点&gt;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#sublayerTransform-属性-lt-重点-gt"><span class="nav-number">4.2.5.</span> <span class="nav-text">sublayerTransform 属性&lt;重点&gt;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#背面"><span class="nav-number">4.2.6.</span> <span class="nav-text">背面</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#扁平化图层"><span class="nav-number">4.2.7.</span> <span class="nav-text">扁平化图层</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#固体对象"><span class="nav-number">4.2.8.</span> <span class="nav-text">固体对象</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#专用图层"><span class="nav-number">5.</span> <span class="nav-text">专用图层</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#CAShapeLayer"><span class="nav-number">5.1.</span> <span class="nav-text">CAShapeLayer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CATextLayer"><span class="nav-number">5.2.</span> <span class="nav-text">CATextLayer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CATransformLayer"><span class="nav-number">5.3.</span> <span class="nav-text">CATransformLayer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CAGradientLayer"><span class="nav-number">5.4.</span> <span class="nav-text">CAGradientLayer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CAReplicatorLayer"><span class="nav-number">5.5.</span> <span class="nav-text">CAReplicatorLayer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CAScrollLayer"><span class="nav-number">5.6.</span> <span class="nav-text">CAScrollLayer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CATiledLayer"><span class="nav-number">5.7.</span> <span class="nav-text">CATiledLayer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CAEmitterLayer"><span class="nav-number">5.8.</span> <span class="nav-text">CAEmitterLayer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CAEAGLLayer"><span class="nav-number">5.9.</span> <span class="nav-text">CAEAGLLayer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AVPlayerLayer"><span class="nav-number">5.10.</span> <span class="nav-text">AVPlayerLayer</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#隐式动画"><span class="nav-number">6.</span> <span class="nav-text">隐式动画</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#事务"><span class="nav-number">6.1.</span> <span class="nav-text">事务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#完成回调"><span class="nav-number">6.2.</span> <span class="nav-text">完成回调</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#隐式动画实现-lt-重要-gt"><span class="nav-number">6.3.</span> <span class="nav-text">隐式动画实现&lt;重要&gt;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#呈现与模型"><span class="nav-number">6.4.</span> <span class="nav-text">呈现与模型</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#显式动画"><span class="nav-number">7.</span> <span class="nav-text">显式动画</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#x20-属性动画"><span class="nav-number">7.1.</span> <span class="nav-text"> 属性动画</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#关键帧动画"><span class="nav-number">7.1.1.</span> <span class="nav-text">关键帧动画</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#虚拟属性"><span class="nav-number">7.1.2.</span> <span class="nav-text">虚拟属性</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#动画组"><span class="nav-number">7.2.</span> <span class="nav-text">动画组</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#过渡"><span class="nav-number">7.3.</span> <span class="nav-text">过渡</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#对图层树的动画"><span class="nav-number">7.3.1.</span> <span class="nav-text">对图层树的动画</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#在动画过程中取消动画"><span class="nav-number">7.4.</span> <span class="nav-text">在动画过程中取消动画</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#图层时间"><span class="nav-number">8.</span> <span class="nav-text">图层时间</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#CAMediaTiming协议"><span class="nav-number">8.1.</span> <span class="nav-text">CAMediaTiming协议</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#持续和重复"><span class="nav-number">8.1.1.</span> <span class="nav-text">持续和重复</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#相对时间"><span class="nav-number">8.1.2.</span> <span class="nav-text">相对时间</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#fillMode"><span class="nav-number">8.1.3.</span> <span class="nav-text">fillMode</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#层级关系时间"><span class="nav-number">8.2.</span> <span class="nav-text">层级关系时间</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#全局时间和本地时间"><span class="nav-number">8.2.1.</span> <span class="nav-text">全局时间和本地时间</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#暂停，倒回和快进"><span class="nav-number">8.2.2.</span> <span class="nav-text">暂停，倒回和快进</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#缓冲"><span class="nav-number">9.</span> <span class="nav-text">缓冲</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#动画速度"><span class="nav-number">9.1.</span> <span class="nav-text">动画速度</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CAMediaTimingFunction"><span class="nav-number">9.1.1.</span> <span class="nav-text">CAMediaTimingFunction</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UIView的动画缓冲"><span class="nav-number">9.1.2.</span> <span class="nav-text">UIView的动画缓冲</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#缓冲和关键帧动画"><span class="nav-number">9.1.3.</span> <span class="nav-text">缓冲和关键帧动画</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#自定义缓冲函数"><span class="nav-number">9.2.</span> <span class="nav-text">自定义缓冲函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#基于关键帧的缓冲"><span class="nav-number">9.2.1.</span> <span class="nav-text">基于关键帧的缓冲</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#流程自动化"><span class="nav-number">9.2.2.</span> <span class="nav-text">流程自动化</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#基于定时器的动画"><span class="nav-number">10.</span> <span class="nav-text">基于定时器的动画</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#NSTimer"><span class="nav-number">10.0.1.</span> <span class="nav-text">NSTimer</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CADisplayLink"><span class="nav-number">10.0.2.</span> <span class="nav-text">CADisplayLink</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#x20-Run-Loop-模式"><span class="nav-number">10.0.3.</span> <span class="nav-text"> Run Loop 模式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#物理模拟"><span class="nav-number">10.1.</span> <span class="nav-text">物理模拟</span></a></li></ol><li class="nav-item nav-level-1"><a class="nav-link" href="#性能调优-lt-重点-gt"><span class="nav-number">11.</span> <span class="nav-text">性能调优&lt;重点&gt;</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#动画的舞台"><span class="nav-number">11.1.</span> <span class="nav-text">动画的舞台</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#GPU相关的操作"><span class="nav-number">11.1.1.</span> <span class="nav-text">GPU相关的操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CPU相关的操作"><span class="nav-number">11.1.2.</span> <span class="nav-text">CPU相关的操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#IO相关操作"><span class="nav-number">11.1.3.</span> <span class="nav-text">IO相关操作</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#高效绘图"><span class="nav-number">12.</span> <span class="nav-text">高效绘图</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#矢量图形"><span class="nav-number">12.1.</span> <span class="nav-text">矢量图形</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#脏矩形"><span class="nav-number">12.2.</span> <span class="nav-text">脏矩形</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#异步绘制"><span class="nav-number">12.3.</span> <span class="nav-text">异步绘制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CATiledLayer-1"><span class="nav-number">12.3.1.</span> <span class="nav-text">CATiledLayer</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#drawsAsynchronously"><span class="nav-number">12.3.2.</span> <span class="nav-text">drawsAsynchronously</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#图像IO"><span class="nav-number">13.</span> <span class="nav-text">图像IO</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#图层性能"><span class="nav-number">14.</span> <span class="nav-text">图层性能</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#光栅化"><span class="nav-number">14.1.</span> <span class="nav-text">光栅化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#离屏渲染"><span class="nav-number">14.2.</span> <span class="nav-text">离屏渲染</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CAShapeLayer-1"><span class="nav-number">14.3.</span> <span class="nav-text">CAShapeLayer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#shadowPath"><span class="nav-number">14.4.</span> <span class="nav-text">shadowPath</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#混合和过度绘制"><span class="nav-number">14.5.</span> <span class="nav-text">混合和过度绘制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#减少图层数量"><span class="nav-number">14.6.</span> <span class="nav-text">减少图层数量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#对象回收"><span class="nav-number">14.7.</span> <span class="nav-text">对象回收</span></a></li></ol></li></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -2824,6 +1289,10 @@ colorLayer.add(animation, forKey: nil)
 
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
 
   
 
